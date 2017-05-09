@@ -5,6 +5,12 @@
         "iotHubName": {
             "type": "string"
         },
+        "aiName": {
+            "type": "string"
+        },
+        "aiResourceGroup": {
+            "type": "string"
+        },
         "iotHubSku": {
             "type": "string",
             "allowedValues": [
@@ -19,19 +25,6 @@
             "minValue": 1,
             "defaultValue": 1
         },
-        "appInsightsLocation": {
-            "type": "string",
-            "allowedValues": [
-                "East US",
-                "North Europe",
-                "South Central US",
-                "West Europe"
-            ],
-            "defaultValue": "East US",
-            "metadata": {
-                "description": "Location for Appliation Insights"
-            }
-        },
         "repoUrl": {
             "type": "string",
             "defaultValue": "https://github.com/VSChina/iot-hub-e2e-diagnostic"
@@ -39,27 +32,22 @@
     },
     "variables": {
         "resourceLocation": "[resourceGroup().location]",
-        "iotHubName": "[parameters('iotHubName')]",
-        "iotHubSku": "[parameters('iotHubSku')]",
-        "iotHubCapacity": "[parameters('iotHubCapacity')]",
         "appInsightsName": "[concat('ai', uniquestring(resourceGroup().id))]",
-        "appInsightsLocation": "[parameters('appInsightsLocation')]",
         "eventHubNamespace": "[concat('eventhub', uniquestring(resourceGroup().id))]",
         "eventhubResourceId":"[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventhubNamespace'), 'RootManageSharedAccessKey')]",
         "functionAppName": "[concat('function', uniquestring(resourceGroup().id))]",
         "hostingPlanName": "[concat('function', uniquestring(resourceGroup().id))]",
         "funcAppsSiteName": "[concat('function', uniquestring(resourceGroup().id))]",
-        "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]",
-        "repoUrl": "[parameters('repoUrl')]"
+        "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]"
     },
     "resources": [
         {
             "type": "Microsoft.Devices/IotHubs",
             "sku": {
-                "name": "[variables('iotHubSku')]",
-                "capacity": "[variables('iotHubCapacity')]"
+                "name": "[parameters('iotHubSku')]",
+                "capacity": "[parameters('iotHubCapacity')]"
             },
-            "name": "[variables('iotHubName')]",
+            "name": "[parameters('iotHubName')]",
             "apiVersion": "2016-02-03",
             "location": "[variables('resourceLocation')]",
             "tags": {},
@@ -102,18 +90,6 @@
             "dependsOn": [
                 "[resourceId('Microsoft.EventHub/namespaces', variables('eventhubNamespace'))]"
             ]
-        },
-        {
-            "type": "microsoft.insights/components",
-            "kind": "other",
-            "name": "[variables('appInsightsName')]",
-            "apiVersion": "2014-04-01",
-            "location": "[variables('appInsightsLocation')]",
-            "tags": {},
-            "properties": {
-                "ApplicationId": "[variables('appInsightsName')]"
-            },
-            "dependsOn": []
         },
         {  
             "apiVersion":"2015-08-01",
@@ -218,7 +194,7 @@
                         },
                         {
                             "name": "APP_INSIGHTS_INSTRUMENTATION_KEY",
-                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                            "value": "[reference(resourceId(parameters('aiResourceGroup'), 'Microsoft.Insights/components', parameters('aiName')), '2014-04-01').InstrumentationKey]"
                         },
                         {
                             "name": "DIAG_ENDPOINT",
@@ -263,7 +239,7 @@
                         "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
                     ],
                     "properties": {
-                        "RepoUrl": "[variables('repoUrl')]",
+                        "RepoUrl": "[parameters('repoUrl')]",
                         "branch": "functionapp",
                         "IsManualIntegration": true
                     }
