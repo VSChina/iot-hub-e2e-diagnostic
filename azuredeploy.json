@@ -2,12 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "aiName": {
-            "type": "string"
-        },
-        "aiResourceGroup": {
-            "type": "string"
-        },
         "repoUrl": {
             "type": "string",
             "defaultValue": "https://github.com/VSChina/iot-hub-e2e-diagnostic.git"
@@ -15,6 +9,7 @@
     },
     "variables": {
         "resourceLocation": "[resourceGroup().location]",
+        "appInsightsName": "[concat('ai', uniquestring(resourceGroup().id))]",
         "eventHubNamespace": "[concat('eventhub', uniquestring(resourceGroup().id))]",
         "eventhubResourceId":"[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventhubNamespace'), 'RootManageSharedAccessKey')]",
         "functionAppName": "[concat('function', uniquestring(resourceGroup().id))]",
@@ -102,6 +97,19 @@
             "properties": {
                 "name": "[variables('functionAppName')]",
                 "numberOfWorkers": 0
+            },
+            "dependsOn": []
+        },
+
+        {
+            "type": "microsoft.insights/components",
+            "kind": "other",
+            "name": "[variables('appInsightsName')]",
+            "apiVersion": "2014-04-01",
+            "location": "[parameters('appInsightsLocation')]",
+            "tags": {},
+            "properties": {
+                "ApplicationId": "[variables('appInsightsName')]"
             },
             "dependsOn": []
         },
