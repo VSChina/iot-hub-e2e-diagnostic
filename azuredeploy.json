@@ -34,7 +34,8 @@
         },
         "repoUrl": {
             "type": "string",
-            "defaultValue": "https://github.com/VSChina/iot-hub-e2e-diagnostic/tree/functionapp"
+            "branch": "functionapp",
+            "defaultValue": "https://github.com/VSChina/iot-hub-e2e-diagnostic.git"
         }
     },
     "variables": {
