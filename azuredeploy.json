@@ -45,7 +45,8 @@
         "functionAppName": "[concat('function', uniquestring(resourceGroup().id))]",
         "hostingPlanName": "[concat('function', uniquestring(resourceGroup().id))]",
         "funcAppsSiteName": "[concat('function', uniquestring(resourceGroup().id))]",
-        "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]"
+        "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]",
+        "streamAnalyticsJobName": "[concat('stream', uniquestring(resourceGroup().id))]"
     },
     "resources": [
         {
@@ -140,6 +141,17 @@
                     ],
                     "properties":{
                         "path":"d2c-diagnostics"
+                    }
+                },
+                {
+                    "apiVersion":"2015-08-01",
+                    "name":"stream-analytics-output-eventhub",
+                    "type":"eventhubs",
+                    "dependsOn":[
+                        "[concat('Microsoft.EventHub/namespaces/', variables('eventhubNamespace'))]"
+                    ],
+                    "properties":{
+                        "path":"stream-analytics-output-eventhub"
                     }
                 }
             ]
@@ -264,6 +276,71 @@
                     }
                 }
             ]
+        },
+        {
+            "name": "[variables('streamAnalyticsJobName')]",
+            "type": "Microsoft.StreamAnalytics/StreamingJobs",
+            "apiVersion": "2016-03-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "name": "Standard"
+                },
+                "outputErrorPolicy": "stop",
+                "eventsOutOfOrderPolicy": "adjust",
+                "eventsOutOfOrderMaxDelayInSeconds": 0,
+                "eventsLateArrivalMaxDelayInSeconds": 5,
+                "dataLocale": "en-US",
+                "inputs": [{
+                    "name": "input",
+                    "properties": {
+                        "type": "stream",
+                        "serialization": {
+                            "type": "JSON",
+                            "properties": {
+                                "encoding": "UTF8"
+                            }
+                        },
+                        "datasource": {
+                            "type": "Microsoft.Devices/IotHubs",
+                            "properties": {
+                                "iotHubNamespace": "[parameters('iotHubName')]",
+                                "sharedAccessPolicyName": "iothubowner",
+                                "sharedAccessPolicyKey": "[listKeys(resourceId('Microsoft.Devices/IotHubs/Iothubkeys', parameters('iotHubName'), 'iothubowner'), '2016-02-03').primaryKey]",
+                                "endpoint": "messages/events",
+                                "consumerGroupName": "arm"
+                            }
+                        }
+                    }
+                }],
+                "outputs": [{
+                    "name": "output",
+                    "properties": {
+                        "serialization": {
+                            "type": "JSON",
+                            "properties": {
+                                "encoding": "UTF8"
+                            }
+                        },
+                        "datasource": {
+                            "type": "Microsoft.ServiceBus/EventHub",
+                            "properties": {
+                                "serviceBusNamespace": "[variables('eventhubNamespace')]",
+                                "sharedAccessPolicyName": "RootManageSharedAccessKey",
+                                "sharedAccessPolicyKey": "[listkeys(variables('eventhubResourceId'), '2015-08-01').primaryKey]",
+                                "eventHubName": "stream-analytics-output-eventhub"
+                            }
+                        }
+                    }
+                }],
+                "transformation": {
+                    "name": "Transformation",
+                    "properties": {
+                        "streamingUnits": 24,
+                        "query": "SELECT\r\n  *, GetMetadataPropertyValue([iothubInput], '[User].[x-correlation-id]') AS 'x-correlation-id',System.Timestamp AS 'processed-utc-time'\r\nINTO\r\n  output\r\nFROM\r\n  input\r\n  WHERE\r\n GetMetadataPropertyValue([iothubInput], '[User].[x-correlation-id]') IS NOT NULL"
+                    }
+                }
+            }
         }
     ]
 }
