@@ -34,7 +34,6 @@
         },
         "repoUrl": {
             "type": "string",
-            "branch": "functionapp",
             "defaultValue": "https://github.com/VSChina/iot-hub-e2e-diagnostic.git"
         }
     },
