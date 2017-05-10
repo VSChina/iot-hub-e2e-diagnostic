@@ -34,32 +34,27 @@
         },
         "repoUrl": {
             "type": "string",
-            "defaultValue": "https://github.com/VSChina/iot-hub-e2e-diagnostic"
+            "defaultValue": "https://github.com/VSChina/iot-hub-e2e-diagnostic/tree/functionapp"
         }
     },
     "variables": {
         "resourceLocation": "[resourceGroup().location]",
-        "iotHubName": "[parameters('iotHubName')]",
-        "iotHubSku": "[parameters('iotHubSku')]",
-        "iotHubCapacity": "[parameters('iotHubCapacity')]",
         "appInsightsName": "[concat('ai', uniquestring(resourceGroup().id))]",
-        "appInsightsLocation": "[parameters('appInsightsLocation')]",
         "eventHubNamespace": "[concat('eventhub', uniquestring(resourceGroup().id))]",
         "eventhubResourceId":"[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventhubNamespace'), 'RootManageSharedAccessKey')]",
         "functionAppName": "[concat('function', uniquestring(resourceGroup().id))]",
         "hostingPlanName": "[concat('function', uniquestring(resourceGroup().id))]",
         "funcAppsSiteName": "[concat('function', uniquestring(resourceGroup().id))]",
-        "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]",
-        "repoUrl": "[parameters('repoUrl')]"
+        "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]"
     },
     "resources": [
         {
             "type": "Microsoft.Devices/IotHubs",
             "sku": {
-                "name": "[variables('iotHubSku')]",
-                "capacity": "[variables('iotHubCapacity')]"
+                "name": "[parameters('iotHubSku')]",
+                "capacity": "[parameters('iotHubCapacity')]"
             },
-            "name": "[variables('iotHubName')]",
+            "name": "[parameters('iotHubName')]",
             "apiVersion": "2016-02-03",
             "location": "[variables('resourceLocation')]",
             "tags": {},
@@ -108,7 +103,7 @@
             "kind": "other",
             "name": "[variables('appInsightsName')]",
             "apiVersion": "2014-04-01",
-            "location": "[variables('appInsightsLocation')]",
+            "location": "[parameters('appInsightsLocation')]",
             "tags": {},
             "properties": {
                 "ApplicationId": "[variables('appInsightsName')]"
@@ -263,7 +258,7 @@
                         "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
                     ],
                     "properties": {
-                        "RepoUrl": "[variables('repoUrl')]",
+                        "RepoUrl": "[parameters('repoUrl')]",
                         "branch": "functionapp",
                         "IsManualIntegration": true
                     }
