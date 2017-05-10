@@ -150,7 +150,7 @@
                         },
                         {
                             "name": "APP_INSIGHTS_INSTRUMENTATION_KEY",
-                            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('aiName')), '2014-04-01').InstrumentationKey]"
+                            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName')), '2014-04-01').InstrumentationKey]"
                         },
                         {
                             "name": "DIAG_ENDPOINT",
@@ -184,7 +184,8 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.EventHub/namespaces', variables('eventhubNamespace'))]"
+                "[resourceId('Microsoft.EventHub/namespaces', variables('eventhubNamespace'))]",
+                "[resourceId('Microsoft.Insights/components', parameters('appInsightsName')]"
             ],
             "resources": [
                 {
