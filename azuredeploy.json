@@ -40,8 +40,6 @@
     "variables": {
         "resourceLocation": "[resourceGroup().location]",
         "appInsightsName": "[concat('ai', uniquestring(resourceGroup().id))]",
-        "eventHubNamespace": "[concat('eventhub', uniquestring(resourceGroup().id))]",
-        "eventhubResourceId":"[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventhubNamespace'), 'RootManageSharedAccessKey')]",
         "functionAppName": "[concat('function', uniquestring(resourceGroup().id))]",
         "hostingPlanName": "[concat('function', uniquestring(resourceGroup().id))]",
         "funcAppsSiteName": "[concat('function', uniquestring(resourceGroup().id))]",
@@ -67,36 +65,13 @@
                     }
                 },
                 "routing": {
-                    "endpoints": {
-                        "eventHubs": [
-                            {
-                                "connectionString": "[concat(listkeys(variables('eventhubResourceId'), '2015-08-01').primaryConnectionString, ';EntityPath=d2c-diagnostics')]",
-                                "name": "diagnostics",
-                                "subscriptionId": "[subscription().subscriptionId]",
-                                "resourceGroup": "[resourceGroup().name]"
-                            }
-                        ]
-                    },
-                    "routes": [
-                        {
-                            "name": "Events",
-                            "source": "DeviceMessages",
-                            "endpointNames": ["events"],
-                            "isEnabled": true
-                        },
-                        {
-                            "name": "Diagnostics",
-                            "source": "DeviceMessages",
-                            "endpointNames": ["diagnostics"],
-                            "isEnabled": true
-                        }
-                    ]
+
                 },
                 "enableFileUploadNotifications": false,
                 "features": "None"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.EventHub/namespaces', variables('eventhubNamespace'))]"
+                
             ]
         },
         {
@@ -148,26 +123,7 @@
                         }
                     }
                 }],
-                "outputs": [{
-                    "name": "output",
-                    "properties": {
-                        "serialization": {
-                            "type": "JSON",
-                            "properties": {
-                                "encoding": "UTF8"
-                            }
-                        },
-                        "datasource": {
-                            "type": "Microsoft.ServiceBus/EventHub",
-                            "properties": {
-                                "serviceBusNamespace": "[variables('eventhubNamespace')]",
-                                "sharedAccessPolicyName": "RootManageSharedAccessKey",
-                                "sharedAccessPolicyKey": "[listkeys(variables('eventhubResourceId'), '2015-08-01').primaryKey]",
-                                "eventHubName": "stream-analytics-output-eventhub"
-                            }
-                        }
-                    }
-                }],
+                "outputs": [],
                 "transformation": {
                     "name": "Transformation",
                     "properties": {
