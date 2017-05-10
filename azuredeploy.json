@@ -106,7 +106,7 @@
             "kind": "other",
             "name": "[variables('appInsightsName')]",
             "apiVersion": "2014-04-01",
-            "location": "[parameters('appInsightsLocation')]",
+            "location": "[variables('resourceLocation')]",
             "tags": {},
             "properties": {
                 "ApplicationId": "[variables('appInsightsName')]"
