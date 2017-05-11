@@ -188,7 +188,7 @@
                     ],
                     "properties": {
                         "RepoUrl": "[parameters('repoUrl')]",
-                        "branch": "functionapp",
+                        "branch": "functionapp_only_d2c",
                         "IsManualIntegration": true
                     }
                 }
