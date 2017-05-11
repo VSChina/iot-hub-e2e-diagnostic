@@ -40,9 +40,9 @@
     "variables": {
         "resourceLocation": "[resourceGroup().location]",
         "appInsightsName": "[concat('ai', uniquestring(resourceGroup().id))]",
-        "functionAppName": "[concat('test_function', uniquestring(resourceGroup().id))]",
-        "hostingPlanName": "[concat('function', uniquestring(resourceGroup().id))]",
-        "funcAppsSiteName": "[concat('test_function', uniquestring(resourceGroup().id))]",
+        "functionAppName": "[concat('testfunction', uniquestring(resourceGroup().id))]",
+        "hostingPlanName": "[concat('testfunction', uniquestring(resourceGroup().id))]",
+        "funcAppsSiteName": "[concat('testfunction', uniquestring(resourceGroup().id))]",
         "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]",
         "streamAnalyticsJobName": "[concat('stream', uniquestring(resourceGroup().id))]"
     },
@@ -116,38 +116,7 @@
                 "name": "[variables('funcAppsSiteName')]",
                 "siteConfig": {
                     "appSettings": [
-                        {
-                            "name": "AzureWebJobsDashboard",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')),'2015-05-01-preview').key1)]"
-                        },
-                        {
-                            "name": "AzureWebJobsStorage",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')),'2015-05-01-preview').key1)]"
-                        },
-                        {
-                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')),'2015-05-01-preview').key1)]"
-                        },
-                        {
-                            "name": "WEBSITE_CONTENTSHARE",
-                            "value": "[concat(toLower(variables('functionAppName')),'azfunccontents')]"
-                        },
-                        {
-                            "name": "FUNCTIONS_EXTENSION_VERSION",
-                            "value": "~1"
-                        },
-                        {
-                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                            "value": "6.5.0"
-                        },
-                        {
-                            "name": "APP_INSIGHTS_INSTRUMENTATION_KEY",
-                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
-                        },
-                        {
-                            "name": "DIAG_ENDPOINT",
-                            "value": "[listkeys(variables('eventhubResourceId'), '2015-08-01').primaryConnectionString]"
-                        }
+                        
                     ]
                 },
                 "hostNames": [
@@ -174,8 +143,7 @@
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+                "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
             ],
             "resources": [
                 
