@@ -88,50 +88,99 @@
         },
         
         {
-            "name": "[variables('streamAnalyticsJobName')]",
-            "type": "Microsoft.StreamAnalytics/StreamingJobs",
-            "apiVersion": "2016-03-01",
-            "location": "[resourceGroup().location]",
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            },
+            "kind": "functionapp",
+            "name": "[variables('functionAppName')]",
+            "apiVersion": "2015-08-01",
+            "location": "[variables('resourceLocation')]",
             "properties": {
-                "sku": {
-                    "name": "Standard"
-                },
-                "outputErrorPolicy": "stop",
-                "eventsOutOfOrderPolicy": "adjust",
-                "eventsOutOfOrderMaxDelayInSeconds": 0,
-                "eventsLateArrivalMaxDelayInSeconds": 5,
-                "dataLocale": "en-US",
-                "inputs": [{
-                    "name": "input",
-                    "properties": {
-                        "type": "stream",
-                        "serialization": {
-                            "type": "JSON",
-                            "properties": {
-                                "encoding": "UTF8"
-                            }
+                "name": "[variables('functionAppName')]",
+                "numberOfWorkers": 0
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp",
+            "name": "[variables('funcAppsSiteName')]",
+            "apiVersion": "2015-08-01",
+            "location": "[variables('resourceLocation')]",
+            "properties": {
+                "name": "[variables('funcAppsSiteName')]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')),'2015-05-01-preview').key1)]"
                         },
-                        "datasource": {
-                            "type": "Microsoft.Devices/IotHubs",
-                            "properties": {
-                                "iotHubNamespace": "[parameters('iotHubName')]",
-                                "sharedAccessPolicyName": "iothubowner",
-                                "sharedAccessPolicyKey": "[listKeys(resourceId('Microsoft.Devices/IotHubs/Iothubkeys', parameters('iotHubName'), 'iothubowner'), '2016-02-03').primaryKey]",
-                                "endpoint": "messages/events",
-                                "consumerGroupName": "arm"
-                            }
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')),'2015-05-01-preview').key1)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')),'2015-05-01-preview').key1)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[concat(toLower(variables('functionAppName')),'azfunccontents')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~1"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "6.5.0"
+                        },
+                        {
+                            "name": "APP_INSIGHTS_INSTRUMENTATION_KEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "DIAG_ENDPOINT",
+                            "value": "[listkeys(variables('eventhubResourceId'), '2015-08-01').primaryConnectionString]"
                         }
+                    ]
+                },
+                "hostNames": [
+                    "[concat(variables('funcAppsSiteName'),'.azurewebsites.net')]"
+                ],
+                "enabledHostNames": [
+                    "[concat(variables('funcAppsSiteName'),'.azurewebsites.net')]",
+                    "[concat(variables('funcAppsSiteName'),'.scm.azurewebsites.net')]"
+                ],
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(variables('funcAppsSiteName'),'.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    },
+                    {
+                        "name": "[concat(variables('funcAppsSiteName'),'.scm.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
                     }
-                }],
-                "outputs": [],
-                "transformation": {
-                    "name": "Transformation",
-                    "properties": {
-                        "streamingUnits": 24,
-                        "query": "SELECT\r\n  *, GetMetadataPropertyValue([iothubInput], '[User].[x-correlation-id]') AS 'x-correlation-id',System.Timestamp AS 'processed-utc-time'\r\nINTO\r\n  output\r\nFROM\r\n  input\r\n  WHERE\r\n GetMetadataPropertyValue([iothubInput], '[User].[x-correlation-id]') IS NOT NULL"
-                    }
-                }
-            }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.EventHub/namespaces', variables('eventhubNamespace'))]"
+            ],
+            "resources": [
+                
+            ]
         }
     ]
 }
