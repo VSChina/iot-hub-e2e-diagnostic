@@ -2,12 +2,19 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "aiName": {
-            "type": "string"
-        },
-        "aiResourceGroup": {
-            "type": "string"
-        },
+        "appInsightsLocation": {
+            "type": "string",
+            "allowedValues": [
+                "East US",
+                "North Europe",
+                "South Central US",
+                "West Europe"
+            ],
+            "defaultValue": "East US",
+            "metadata": {
+                "description": "Location for Appliation Insights"
+            }
+         },
         "repoUrl": {
             "type": "string",
             "defaultValue": "https://github.com/VSChina/iot-hub-e2e-diagnostic.git"
@@ -22,7 +29,8 @@
         "funcAppsSiteName": "[concat('function', uniquestring(resourceGroup().id))]",
         "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]",
         "streamAnalyticsJobName": "[concat('stream', uniquestring(resourceGroup().id))]",
-        "webAppName": "[concat('webApp', uniquestring(resourceGroup().id))]"
+        "webAppName": "[concat('webApp', uniquestring(resourceGroup().id))]",
+        "appInsightsName": "[concat('ai', uniquestring(resourceGroup().id))]"
     },
     "resources": [
         {  
@@ -142,7 +150,7 @@
                         },
                         {
                             "name": "APP_INSIGHTS_INSTRUMENTATION_KEY",
-                            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('aiName')), '2014-04-01').InstrumentationKey]"
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
                         },
                         {
                             "name": "DIAG_ENDPOINT",
@@ -176,7 +184,8 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.EventHub/namespaces', variables('eventhubNamespace'))]"
+                "[resourceId('Microsoft.EventHub/namespaces', variables('eventhubNamespace'))]",
+                "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
             ],
             "resources": [
                 {
@@ -193,6 +202,19 @@
                     }
                 }
             ]
+        },
+
+        {
+            "type": "microsoft.insights/components",
+            "kind": "other",
+            "name": "[variables('appInsightsName')]",
+            "apiVersion": "2014-04-01",
+            "location": "[parameters('appInsightsLocation')]",
+            "tags": {},
+            "properties": {
+                "ApplicationId": "[variables('appInsightsName')]"
+            },
+            "dependsOn": []
         }
     ]
 }
