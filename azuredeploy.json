@@ -40,9 +40,9 @@
     "variables": {
         "resourceLocation": "[resourceGroup().location]",
         "appInsightsName": "[concat('ai', uniquestring(resourceGroup().id))]",
-        "functionAppName": "[concat('function', uniquestring(resourceGroup().id))]",
+        "functionAppName": "[concat('test_function', uniquestring(resourceGroup().id))]",
         "hostingPlanName": "[concat('function', uniquestring(resourceGroup().id))]",
-        "funcAppsSiteName": "[concat('function', uniquestring(resourceGroup().id))]",
+        "funcAppsSiteName": "[concat('test_function', uniquestring(resourceGroup().id))]",
         "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]",
         "streamAnalyticsJobName": "[concat('stream', uniquestring(resourceGroup().id))]"
     },
