@@ -16,61 +16,64 @@
     "variables": {
         "resourceLocation": "[resourceGroup().location]",
         "eventHubNamespace": "[concat('eventhub', uniquestring(resourceGroup().id))]",
-        "eventhubResourceId":"[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventhubNamespace'), 'RootManageSharedAccessKey')]",
+        "eventhubResourceId": "[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventhubNamespace'), 'RootManageSharedAccessKey')]",
         "functionAppName": "[concat('function', uniquestring(resourceGroup().id))]",
         "hostingPlanName": "[concat('function', uniquestring(resourceGroup().id))]",
         "funcAppsSiteName": "[concat('function', uniquestring(resourceGroup().id))]",
         "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]",
         "streamAnalyticsJobName": "[concat('stream', uniquestring(resourceGroup().id))]",
-        "webAppName": "[concat('webApp', uniquestring(resourceGroup().id))]"
+        "webAppName": "[concat('webApp', uniquestring(resourceGroup().id))]",
+        "appHostingPlanName": "[concat('webHost', uniquestring(resourceGroup().id))]",
+        "webAppSiteName": "[concat('webapp', uniquestring(resourceGroup().id))]",
+        "iotHubResourceId": "[resourceId('Microsoft.Devices/Iothubs', parameters('iotHubName'))]",
+        "iotHubKeyResource": "[resourceId('Microsoft.Devices/Iothubs/Iothubkeys', parameters('iotHubName'), 'iothubowner')]"
     },
     "resources": [
-        {  
-            "apiVersion":"2015-08-01",
-            "name":"[variables('eventhubNamespace')]",
-            "type":"Microsoft.EventHub/namespaces",
-            "location":"[variables('resourceLocation')]",
-            "sku":{  
-                "name":"Standard",
-                "tier":"Standard"
+        {
+            "apiVersion": "2015-08-01",
+            "name": "[variables('eventhubNamespace')]",
+            "type": "Microsoft.EventHub/namespaces",
+            "location": "[variables('resourceLocation')]",
+            "sku": {
+                "name": "Standard",
+                "tier": "Standard"
             },
-            "resources":[  
+            "resources": [
                 {
-                    "apiVersion":"2015-08-01",
-                    "name":"insights-metrics-pt1m",
-                    "type":"eventhubs",
-                    "dependsOn":[
+                    "apiVersion": "2015-08-01",
+                    "name": "insights-metrics-pt1m",
+                    "type": "eventhubs",
+                    "dependsOn": [
                         "[concat('Microsoft.EventHub/namespaces/', variables('eventhubNamespace'))]"
                     ],
-                    "properties":{
-                        "path":"insights-metrics-pt1m"
+                    "properties": {
+                        "path": "insights-metrics-pt1m"
                     }
                 },
                 {
-                    "apiVersion":"2015-08-01",
-                    "name":"d2c-diagnostics",
-                    "type":"eventhubs",
-                    "dependsOn":[
+                    "apiVersion": "2015-08-01",
+                    "name": "d2c-diagnostics",
+                    "type": "eventhubs",
+                    "dependsOn": [
                         "[concat('Microsoft.EventHub/namespaces/', variables('eventhubNamespace'))]"
                     ],
-                    "properties":{
-                        "path":"d2c-diagnostics"
+                    "properties": {
+                        "path": "d2c-diagnostics"
                     }
                 },
                 {
-                    "apiVersion":"2015-08-01",
-                    "name":"stream-analytics-output-eventhub",
-                    "type":"eventhubs",
-                    "dependsOn":[
+                    "apiVersion": "2015-08-01",
+                    "name": "stream-analytics-output-eventhub",
+                    "type": "eventhubs",
+                    "dependsOn": [
                         "[concat('Microsoft.EventHub/namespaces/', variables('eventhubNamespace'))]"
                     ],
-                    "properties":{
-                        "path":"stream-analytics-output-eventhub"
+                    "properties": {
+                        "path": "stream-analytics-output-eventhub"
                     }
                 }
             ]
         },
-
         {
             "type": "Microsoft.Storage/storageAccounts",
             "sku": {
@@ -85,7 +88,6 @@
             "properties": {},
             "dependsOn": []
         },
-
         {
             "type": "Microsoft.Web/serverfarms",
             "sku": {
@@ -105,7 +107,6 @@
             },
             "dependsOn": []
         },
-
         {
             "type": "Microsoft.Web/sites",
             "kind": "functionapp",
@@ -189,6 +190,108 @@
                     "properties": {
                         "RepoUrl": "[parameters('repoUrl')]",
                         "branch": "functionapp_only_d2c",
+                        "IsManualIntegration": true
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "f1",
+                "capacity": 1
+            },
+            "kind": "app",
+            "name": "[variables('appHostingPlanName')]",
+            "apiVersion": "2015-08-01",
+            "location": "[variables('resourceLocation')]",
+            "properties": {
+                "name": "[variables('appHostingPlanName')]",
+                "numberOfWorkers": 0
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "name": "[variables('webAppSiteName')]",
+            "apiVersion": "2015-08-01",
+            "location": "[variables('resourceLocation')]",
+            "properties": {
+                "name": "[variables('webAppSiteName')]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "6.9.1"
+                        },
+                        {
+                            "name": "IOT_HUB_CONNECTION_STRING",
+                            "value": "[concat('HostName=', reference(variables('iotHubResourceId'), '2016-02-03').hostName, ';SharedAccessKeyName=', 'iothubowner', ';SharedAccessKey=', listkeys(variables('iotHubKeyResource'), variables('iotHubVersion')).primaryKey)]"
+                        },
+                        {
+                            "name": "APPLICAITON_INSIGHT_APP_ID",
+                            "value": "[[Your application insights application id]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY1",
+                            "value": "[[Your application insights api key 1]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY2",
+                            "value": "[[Your application insights api key 2]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY3",
+                            "value": "[[Your application insights api key 3]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY4",
+                            "value": "[[Your application insights api key 4]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY5",
+                            "value": "[[Your application insights api key 5]"
+                        }
+                    ]
+                },
+                "hostNames": [
+                    "[concat(variables('webAppSiteName'),'.azurewebsites.net')]"
+                ],
+                "enabledHostNames": [
+                    "[concat(variables('webAppSiteName'),'.azurewebsites.net')]",
+                    "[concat(variables('webAppSiteName'),'.scm.azurewebsites.net')]"
+                ],
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(variables('webAppSiteName'),'.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    },
+                    {
+                        "name": "[concat(variables('webAppSiteName'),'.scm.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appHostingPlanName'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('appHostingPlanName'))]",
+                "[resourceId('Microsoft.Devices/Iothubs', variables('iotHubName'))]"
+            ],
+            "resources": [
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "web",
+                    "type": "sourcecontrols",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', variables('webAppSiteName'))]"
+                    ],
+                    "properties": {
+                        "RepoUrl": "https://github.com/VSChina/azure-iot-diagnostics-api",
+                        "branch": "release",
                         "IsManualIntegration": true
                     }
                 }
