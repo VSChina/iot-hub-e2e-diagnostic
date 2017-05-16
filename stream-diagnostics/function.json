@@ -1,0 +1,13 @@
+{
+  "bindings": [
+    {
+      "type": "eventHubTrigger",
+      "name": "d2cMessage",
+      "direction": "in",
+      "path": "stream-diagnostics",
+      "connection": "DIAG_ENDPOINT",
+      "consumerGroup": "$Default"
+    }
+  ],
+  "disabled": false
+}
