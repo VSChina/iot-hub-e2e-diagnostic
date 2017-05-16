@@ -197,7 +197,7 @@
                     ],
                     "properties": {
                         "RepoUrl": "[parameters('repoUrl')]",
-                        "branch": "functionapp_only_d2c",
+                        "branch": "funcapp_iot_only_d2c",
                         "IsManualIntegration": true
                     }
                 }
