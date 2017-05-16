@@ -188,7 +188,7 @@
                     ],
                     "properties": {
                         "RepoUrl": "[parameters('repoUrl')]",
-                        "branch": "functionapp",
+                        "branch": "funcapp_iot_stream",
                         "IsManualIntegration": true
                     }
                 }
