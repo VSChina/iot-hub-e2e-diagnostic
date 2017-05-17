@@ -66,13 +66,13 @@
                 },
                 {
                     "apiVersion":"2015-08-01",
-                    "name":"stream-analytics-output-eventhub",
+                    "name":"stream-diagnostics",
                     "type":"eventhubs",
                     "dependsOn":[
                         "[concat('Microsoft.EventHub/namespaces/', variables('eventhubNamespace'))]"
                     ],
                     "properties":{
-                        "path":"stream-analytics-output-eventhub"
+                        "path":"stream-diagnostics"
                     }
                 }
             ]
