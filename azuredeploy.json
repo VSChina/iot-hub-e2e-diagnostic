@@ -2,6 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "iotHubName": {
+            "type": "string"
+        },
         "appInsightsLocation": {
             "type": "string",
             "allowedValues": [
@@ -252,7 +255,7 @@
                         },
                         {
                             "name": "IOT_HUB_CONNECTION_STRING",
-                            "value": "[concat('HostName=', reference(variables('iotHubResourceId'), '2016-02-03').hostName, ';SharedAccessKeyName=', 'iothubowner', ';SharedAccessKey=', listkeys(variables('iotHubKeyResource'), variables('iotHubVersion')).primaryKey)]"
+                            "value": "[concat('HostName=', reference(variables('iotHubResourceId'), '2016-02-03').hostName, ';SharedAccessKeyName=', 'iothubowner', ';SharedAccessKey=', listkeys(variables('iotHubKeyResource'),'2016-02-03' ).primaryKey)]"
                         },
                         {
                             "name": "APPLICAITON_INSIGHT_APP_ID",
@@ -304,8 +307,7 @@
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appHostingPlanName'))]"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', variables('appHostingPlanName'))]",
-                "[resourceId('Microsoft.Devices/Iothubs', variables('iotHubName'))]"
+                "[resourceId('Microsoft.Web/serverfarms', variables('appHostingPlanName'))]"
             ],
             "resources": [
                 {
