@@ -334,7 +334,7 @@
                                 "serviceBusNamespace": "[variables('eventhubNamespace')]",
                                 "sharedAccessPolicyName": "RootManageSharedAccessKey",
                                 "sharedAccessPolicyKey": "[listkeys(variables('eventhubResourceId'), '2015-08-01').primaryKey]",
-                                "eventHubName": "stream-analytics-output-eventhub"
+                                "eventHubName": "stream-diagnostics"
                             }
                         }
                     }
