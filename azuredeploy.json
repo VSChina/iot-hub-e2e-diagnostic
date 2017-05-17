@@ -2,6 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+                "iotHubName": {
+            "type": "string"
+        },
         "aiName": {
             "type": "string"
         },
@@ -22,7 +25,11 @@
         "funcAppsSiteName": "[concat('function', uniquestring(resourceGroup().id))]",
         "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]",
         "streamAnalyticsJobName": "[concat('stream', uniquestring(resourceGroup().id))]",
-        "webAppName": "[concat('webApp', uniquestring(resourceGroup().id))]"
+        "webAppName": "[concat('webApp', uniquestring(resourceGroup().id))]",
+        "appHostingPlanName": "[concat('webHost', uniquestring(resourceGroup().id))]",
+        "webAppSiteName": "[concat('webapp', uniquestring(resourceGroup().id))]",
+        "iotHubResourceId": "[resourceId('Microsoft.Devices/Iothubs', parameters('iotHubName'))]",
+        "iotHubKeyResource": "[resourceId('Microsoft.Devices/Iothubs/Iothubkeys', parameters('iotHubName'), 'iothubowner')]"
     },
     "resources": [
         {  
@@ -193,6 +200,108 @@
                     }
                 }
             ]
-        }
+        },
+
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "f1",
+                "capacity": 1
+            },
+            "kind": "app",
+            "name": "[variables('appHostingPlanName')]",
+            "apiVersion": "2015-08-01",
+            "location": "[variables('resourceLocation')]",
+            "properties": {
+                "name": "[variables('appHostingPlanName')]",
+                "numberOfWorkers": 0
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "name": "[variables('webAppSiteName')]",
+            "apiVersion": "2015-08-01",
+            "location": "[variables('resourceLocation')]",
+            "properties": {
+                "name": "[variables('webAppSiteName')]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "6.9.1"
+                        },
+                        {
+                            "name": "IOT_HUB_CONNECTION_STRING",
+                            "value": "[concat('HostName=', reference(variables('iotHubResourceId'), '2016-02-03').hostName, ';SharedAccessKeyName=', 'iothubowner', ';SharedAccessKey=', listkeys(variables('iotHubKeyResource'), '2016-02-03').primaryKey)]"
+                        },
+                        {
+                            "name": "APPLICAITON_INSIGHT_APP_ID",
+                            "value": "[[Your application insights application id]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY1",
+                            "value": "[[Your application insights api key 1]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY2",
+                            "value": "[[Your application insights api key 2]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY3",
+                            "value": "[[Your application insights api key 3]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY4",
+                            "value": "[[Your application insights api key 4]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY5",
+                            "value": "[[Your application insights api key 5]"
+                        }
+                    ]
+                },
+                "hostNames": [
+                    "[concat(variables('webAppSiteName'),'.azurewebsites.net')]"
+                ],
+                "enabledHostNames": [
+                    "[concat(variables('webAppSiteName'),'.azurewebsites.net')]",
+                    "[concat(variables('webAppSiteName'),'.scm.azurewebsites.net')]"
+                ],
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(variables('webAppSiteName'),'.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    },
+                    {
+                        "name": "[concat(variables('webAppSiteName'),'.scm.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appHostingPlanName'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('appHostingPlanName'))]",
+            ],
+            "resources": [
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "web",
+                    "type": "sourcecontrols",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', variables('webAppSiteName'))]"
+                    ],
+                    "properties": {
+                        "RepoUrl": "https://github.com/VSChina/azure-iot-diagnostics-api",
+                        "branch": "release",
+                        "IsManualIntegration": true
+                    }
+                }
+            ]
+         }
     ]
 }
