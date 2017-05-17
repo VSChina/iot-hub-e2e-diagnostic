@@ -126,7 +126,7 @@
                     "name": "Transformation",
                     "properties": {
                         "streamingUnits": 24,
-                        "query": "SELECT\r\n  *, GetMetadataPropertyValue([iothubInput], '[User].[x-correlation-id]') AS 'x-correlation-id',System.Timestamp AS 'processed-utc-time'\r\nINTO\r\n  output\r\nFROM\r\n  input\r\n  WHERE\r\n GetMetadataPropertyValue([iothubInput], '[User].[x-correlation-id]') IS NOT NULL"
+                        "query": "SELECT\r\n  *, GetMetadataPropertyValue([input], '[User].[x-correlation-id]') AS 'x-correlation-id',System.Timestamp AS 'processed-utc-time'\r\nINTO\r\n  output\r\nFROM\r\n  input\r\n  WHERE\r\n GetMetadataPropertyValue([input], '[User].[x-correlation-id]') IS NOT NULL"
                     }
                 }
             }
