@@ -29,54 +29,56 @@ public static void Run(EventData d2cMessage, TraceWriter log)
     bool validMessage = false;
     var message = Encoding.UTF8.GetString(d2cMessage.GetBytes());
     var serializer = new JavaScriptSerializer();
-    var properties = serializer.Deserialize<Dictionary<string, object>>(message);
+    var propertiesArray = serializer.Deserialize<Dictionary<string, object>[]>(message);
 
-    DateTime enqueueTime, processedTime = DateTime.MinValue;
-    if (properties.ContainsKey(correlationIdKey) &&
-        properties.ContainsKey(processedTimeKey) &&
-        properties.ContainsKey(iotHubKey) &&
-        properties.ContainsKey("temperature") &&
-        DateTime.TryParse(properties[processedTimeKey].ToString(), out processedTime))
-    {
-        var iotProperties = properties[iotHubKey] as Dictionary<string, object>;
-        if (iotProperties.ContainsKey(enqueueTimeKey) &&
-            DateTime.TryParse(iotProperties[enqueueTimeKey].ToString(), out enqueueTime))
+    foreach(var properties in propertiesArray) {
+        DateTime enqueueTime, processedTime = DateTime.MinValue;
+        if (properties.ContainsKey(correlationIdKey) &&
+            properties.ContainsKey(processedTimeKey) &&
+            properties.ContainsKey(iotHubKey) &&
+            properties.ContainsKey("temperature") &&
+            DateTime.TryParse(properties[processedTimeKey].ToString(), out processedTime))
         {
-            var latencyInMilliseconds = (processedTime - enqueueTime).TotalMilliseconds;
-            log.Info(iotProperties[enqueueTimeKey].ToString());
-            log.Info(properties[processedTimeKey].ToString());
-            latencyInMilliseconds = Math.Max(0, latencyInMilliseconds);
-            var customeProperties = new Dictionary<string, string>()
-                        {
-                            {correlationIdKey, properties[correlationIdKey].ToString()},
-                            {enqueueTimeKey, iotProperties[enqueueTimeKey].ToString()},
-                            {processedTimeKey, properties[processedTimeKey].ToString()}
-                        };
-
-            telemetry.TrackMetric("StreamJobLatency", latencyInMilliseconds, customeProperties);
-
-            validMessage = true;
-        }
-    }
-    if (!validMessage)
-    {
-        var customProperties = new Dictionary<string, string>();
-        foreach (var keyValue in properties)
-        {
-            if (keyValue.Key == iotHubKey || keyValue.Key == "User")
+            var iotProperties = properties[iotHubKey] as Dictionary<string, object>;
+            if (iotProperties.ContainsKey(enqueueTimeKey) &&
+                DateTime.TryParse(iotProperties[enqueueTimeKey].ToString(), out enqueueTime))
             {
-                var iotProperties = keyValue.Value as Dictionary<string, object>;
-                foreach (var iotKV in iotProperties)
+                var latencyInMilliseconds = (processedTime - enqueueTime).TotalMilliseconds;
+                log.Info(iotProperties[enqueueTimeKey].ToString());
+                log.Info(properties[processedTimeKey].ToString());
+                latencyInMilliseconds = Math.Max(0, latencyInMilliseconds);
+                var customeProperties = new Dictionary<string, string>()
+                            {
+                                {correlationIdKey, properties[correlationIdKey].ToString()},
+                                {enqueueTimeKey, iotProperties[enqueueTimeKey].ToString()},
+                                {processedTimeKey, properties[processedTimeKey].ToString()}
+                            };
+
+                telemetry.TrackMetric("StreamJobLatency", latencyInMilliseconds, customeProperties);
+
+                validMessage = true;
+            }
+        }
+        if (!validMessage)
+        {
+            var customProperties = new Dictionary<string, string>();
+            foreach (var keyValue in properties)
+            {
+                if (keyValue.Key == iotHubKey || keyValue.Key == "User")
                 {
-                    customProperties[keyValue.Key + "." + iotKV.Key] = iotKV.Value == null ? "null" : iotKV.Value.ToString();
+                    var iotProperties = keyValue.Value as Dictionary<string, object>;
+                    foreach (var iotKV in iotProperties)
+                    {
+                        customProperties[keyValue.Key + "." + iotKV.Key] = iotKV.Value == null ? "null" : iotKV.Value.ToString();
+                    }
+                }
+                else
+                {
+                    customProperties[keyValue.Key] = keyValue.Value.ToString();
                 }
             }
-            else
-            {
-                customProperties[keyValue.Key] = keyValue.Value.ToString();
-            }
+            customProperties["DiagnosticErrorMessage"] = "Fail to read temperature sensor data";
+            telemetry.TrackMetric("StreamInvalidMessage", 1, customProperties);
         }
-        customProperties["DiagnosticErrorMessage"] = "Fail to read temperature sensor data";
-        telemetry.TrackMetric("StreamInvalidMessage", 1, customProperties);
     }
 }
