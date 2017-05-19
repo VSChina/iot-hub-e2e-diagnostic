@@ -25,10 +25,13 @@
     },
     "variables": {
         "resourceLocation": "[resourceGroup().location]",
+        "eventHubNamespace": "[concat('eventhub', uniquestring(resourceGroup().id))]",
+        "eventhubResourceId":"[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventhubNamespace'), 'RootManageSharedAccessKey')]",
         "functionAppName": "[concat('function', uniquestring(resourceGroup().id))]",
         "hostingPlanName": "[concat('function', uniquestring(resourceGroup().id))]",
         "funcAppsSiteName": "[concat('function', uniquestring(resourceGroup().id))]",
         "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]",
+        "streamAnalyticsJobName": "[concat('stream', uniquestring(resourceGroup().id))]",
         "webAppName": "[concat('webApp', uniquestring(resourceGroup().id))]",
         "appInsightsName": "[concat('ai', uniquestring(resourceGroup().id))]",
         "appHostingPlanName": "[concat('webHost', uniquestring(resourceGroup().id))]",
@@ -37,6 +40,52 @@
         "iotHubKeyResource": "[resourceId('Microsoft.Devices/Iothubs/Iothubkeys', parameters('iotHubName'), 'iothubowner')]"
     },
     "resources": [
+        {  
+            "apiVersion":"2015-08-01",
+            "name":"[variables('eventhubNamespace')]",
+            "type":"Microsoft.EventHub/namespaces",
+            "location":"[variables('resourceLocation')]",
+            "sku":{  
+                "name":"Standard",
+                "tier":"Standard"
+            },
+            "resources":[  
+                {
+                    "apiVersion":"2015-08-01",
+                    "name":"insights-metrics-pt1m",
+                    "type":"eventhubs",
+                    "dependsOn":[
+                        "[concat('Microsoft.EventHub/namespaces/', variables('eventhubNamespace'))]"
+                    ],
+                    "properties":{
+                        "path":"insights-metrics-pt1m"
+                    }
+                },
+                {
+                    "apiVersion":"2015-08-01",
+                    "name":"d2c-diagnostics",
+                    "type":"eventhubs",
+                    "dependsOn":[
+                        "[concat('Microsoft.EventHub/namespaces/', variables('eventhubNamespace'))]"
+                    ],
+                    "properties":{
+                        "path":"d2c-diagnostics"
+                    }
+                },
+                {
+                    "apiVersion":"2015-08-01",
+                    "name":"stream-analytics-output-eventhub",
+                    "type":"eventhubs",
+                    "dependsOn":[
+                        "[concat('Microsoft.EventHub/namespaces/', variables('eventhubNamespace'))]"
+                    ],
+                    "properties":{
+                        "path":"stream-analytics-output-eventhub"
+                    }
+                }
+            ]
+        },
+
         {
             "type": "Microsoft.Storage/storageAccounts",
             "sku": {
@@ -109,6 +158,10 @@
                         {
                             "name": "APP_INSIGHTS_INSTRUMENTATION_KEY",
                             "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "DIAG_ENDPOINT",
+                            "value": "[listkeys(variables('eventhubResourceId'), '2015-08-01').primaryConnectionString]"
                         }
                     ]
                 },
@@ -138,6 +191,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.EventHub/namespaces', variables('eventhubNamespace'))]",
                 "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
             ],
             "resources": [
