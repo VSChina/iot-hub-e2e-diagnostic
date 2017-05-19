@@ -100,7 +100,7 @@
                 "eventsLateArrivalMaxDelayInSeconds": 5,
                 "dataLocale": "en-US",
                 "inputs": [{
-                    "name": "input",
+                    "name": "diagInput",
                     "properties": {
                         "type": "stream",
                         "serialization": {
@@ -126,7 +126,7 @@
                     "name": "Transformation",
                     "properties": {
                         "streamingUnits": 24,
-                        "query": "SELECT\r\n  *, GetMetadataPropertyValue([input], '[User].[x-correlation-id]') AS 'x-correlation-id',System.Timestamp AS 'processed-utc-time'\r\nINTO\r\n  output\r\nFROM\r\n  input\r\n  WHERE\r\n GetMetadataPropertyValue([input], '[User].[x-correlation-id]') IS NOT NULL"
+                        "query": "SELECT\r\n  *, GetMetadataPropertyValue([diagInput], '[User].[x-correlation-id]') AS 'x-correlation-id',System.Timestamp AS 'processed-utc-time'\r\nINTO\r\n  diagOutput\r\nFROM\r\n  diagInput\r\n  WHERE\r\n GetMetadataPropertyValue([input], '[User].[x-correlation-id]') IS NOT NULL"
                     }
                 }
             }
