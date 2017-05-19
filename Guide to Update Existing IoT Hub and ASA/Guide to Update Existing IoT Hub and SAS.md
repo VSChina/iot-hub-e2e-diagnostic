@@ -21,22 +21,22 @@ To enable end-to-end diagnostics in the above IoT Hub solution, a few resources 
 3. [TODO Update AI API Key]
 
 ## Setup IoT Hub solution based on existing IoT Hub and Stream Analytics
+### Provision diagnostics resources using ARM template
+1. Navigate to [e2e diagnostics repo](https://github.com/VSChina/iot-hub-e2e-diagnostic/tree/existing_HUB_SA)
+2. Click **Deploy to Auzre**, it will navigate to azure portal
+3. Select subscription and resource group that existing IoT Hub and Stream Analytics belongs to
+![](./New_Existing_IoT_Stream.png)
+4. Two lower case letters prefix is used as prefix of provisioned resources for distinguishing from other resources
+5. Select the checkbox "*I agree to terms and conditions stated above*"
+6. Click **Purchase**
+
 ### Modifying existing IoT Hub
 1. Open the existing IoT Hub in Azure portal
-2. Click **Metrics** to configure metrics information
-3. Check the following metrics from **Available metrics** list, please check the *optional* items if the corresponding endpoints are defined and used:
-   * Connected devices
-   * Messages delivered to the built-in endpoint (messages/events)
-   * Total devices
-   * (*optional*) Messages delivered to Event Hub endpoints
-   * (*optional*) Messages delivered to Service Bus Queue endpoints
-   * (*optional*) Messages delivered to Service Bus Topic endpoints
-   
-   ![](./Available_Metrics.png)
-   
-4. Turn on **Diagnostics settings** for **Metrics** as below, then click OK button first, then Save button.
-   
-   ![](./Metrics_Diagnostics_Settings.png)
+2. Navigate to **Endpoints** under **MESSAGING**, click **Add** button to add end point
+![](./Add_Endpoint.png)
+3. Navigate to **Routes** under **MESSAGING**, click **Add** button to add two routes:
+![](./Add_EventRoute.png)
+![](./Add_DiagRoute.PNG)
 
 ### Modifying existing Stream Analytics
 1. Open the existing Stream Analytics in Azure portal
