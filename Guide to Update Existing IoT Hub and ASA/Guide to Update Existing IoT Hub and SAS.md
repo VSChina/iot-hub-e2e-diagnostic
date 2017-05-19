@@ -38,22 +38,22 @@ To enable end-to-end diagnostics in the above IoT Hub solution, a few resources 
 ![](./Add_EventRoute.png)
 ![](./Add_DiagRoute.PNG)
 
-### Modifying existing Stream Analytics
-1. Open the existing Stream Analytics in Azure portal
+### Modifying existing Stream Analytics Job
+1. Open the existing Stream Analytics Job in Azure portal
 2. Click **Overview** tab and click *Stop* button to stop streaming job
 3. Click **Outputs** tab under *JOB TOPOLOGY*
 4. Click *Add* button to add new output, then click *Create* button
 
    ![](./Stream_Diag_Output.png)
-5. Click **Query** tab under *JOB TOPOLOGY*, append the following query at the end of existing query, of course you need replace *erichiot2* and *diagOutput* with corresponding input and output in your query:
+5. Click **Query** tab under *JOB TOPOLOGY*, append the following query at the end of existing query, of course you need replace *diagInput* and *diagOutput* with corresponding input and output in your query:
 ```sql
 SELECT
-    *, GetMetadataPropertyValue([erichiot2], '[User].[x-correlation-id]') AS 'x-correlation-id',
-    GetMetadataPropertyValue([erichiot2], '[User].[x-before-send-request]') AS 'x-before-send-request'
+    *, GetMetadataPropertyValue([diagInput], '[User].[x-correlation-id]') AS 'x-correlation-id',
+    GetMetadataPropertyValue([diagInput], '[User].[x-before-send-request]') AS 'x-before-send-request'
 INTO
     [diagOutput]
 FROM
-    [erichiot2]
+    [diagInput]
 WHERE 
     [x-correlation-id] IS NOT NULL
 ```
