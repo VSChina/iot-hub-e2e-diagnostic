@@ -5,6 +5,7 @@ const Message = require('azure-iot-common').Message;
 const iotHubConnectionString = process.env['iotHubConnectionString'];
 const cloudClient = require('azure-iothub').Client.fromConnectionString(iotHubConnectionString);
 const request = require('request');
+const appInsights = require('applicationinsights');
 
 function truncateByDot(text, limit){
     return text.length < limit ? text : text.substr(0, limit - 3) + '...';
@@ -21,6 +22,11 @@ module.exports = function (context, myEventHubMessage) {
     }
     var deviceId = context.bindingData.systemProperties['iothub-connection-device-id'];
     */
+    var isDiagnosticMessage = context.bindingData && context.bindingData.properties && context.bindingData.properties['x-correlation-id'];
+    if (isDiagnosticMessage) {
+        var startTime = new Date();
+        var aiClient = appInsights.getClient(process.env.APP_INSIGHTS_INSTRUMENTATION_KEY);
+    }
 
     var deviceId = "AZ3166";
     if (deviceId && myEventHubMessage.topic) {
@@ -58,5 +64,17 @@ module.exports = function (context, myEventHubMessage) {
             }
         });
     }
+
+    if (isDiagnosticMessage) {
+        var endTime = new Date();
+        var elapsedTime = (endTime.getTime() - startTime.getTime());
+        context.log(`elapsedTime: ${elapsedTime} ms`);
+        context.log(process.env['APP_INSIGHTS_INSTRUMENTATION_KEY'])
+        var properties = {
+            'x-correlation-id': context.bindingData.properties['x-correlation-id']
+        }
+        aiClient.trackMetric("FunctionLatency", elapsedTime, 1, elapsedTime, elapsedTime, 0, properties);
+    }
+
     context.done();
 };
