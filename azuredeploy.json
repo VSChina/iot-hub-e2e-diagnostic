@@ -266,6 +266,10 @@
                         {
                             "name": "APPLICATION_INSIGHT_API_KEY7",
                             "value": "[[Your application insights api key 7]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY8",
+                            "value": "[[Your application insights api key 8]"
                         }
                     ]
                 },
