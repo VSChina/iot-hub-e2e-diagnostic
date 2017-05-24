@@ -18,7 +18,10 @@ To enable end-to-end diagnostics in the above IoT Hub solution, a few resources 
 ## Setup brand new IoT Hub solution with e2e diagnostics
 1. Navigate to [brand new IoT Hub solution branch](https://github.com/VSChina/iot-hub-e2e-diagnostic/tree/netnew_armtemplate)
 2. Click **Deploy to Azure**
-3. [TODO Update AI API Key]
+3. Select subscription and provide necessary settings
+4. Check "*I agree to terms and conditions stated above*"
+5. Click **Purchase**
+6. After deploying success, update API Key for Web APP. Please refer: ["Guide to Config Application Insights Keys in Web APP"](https://github.com/VSChina/iot-hub-e2e-diagnostic/tree/tutorial)
 
 ## Setup IoT Hub solution based on existing IoT Hub and Stream Analytics
 ### Provision diagnostics resources using ARM template
@@ -27,7 +30,7 @@ To enable end-to-end diagnostics in the above IoT Hub solution, a few resources 
 3. Select subscription and resource group that existing IoT Hub and Stream Analytics belongs to
 ![](./New_Existing_IoT_Stream.png)
 4. Two lower case letters prefix is used as prefix of provisioned resources for distinguishing from other resources
-5. Select the checkbox "*I agree to terms and conditions stated above*"
+5. Check "*I agree to terms and conditions stated above*"
 6. Click **Purchase**
 
 ### Modifying existing IoT Hub
