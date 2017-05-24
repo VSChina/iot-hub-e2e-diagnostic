@@ -28,7 +28,7 @@ To enable end-to-end diagnostics in the above IoT Hub solution, a few resources 
 1. Navigate to [e2e diagnostics repo](https://github.com/VSChina/iot-hub-e2e-diagnostic/tree/existing_HUB_SA)
 2. Click **Deploy to Auzre**, it will navigate to azure portal
 3. Select subscription and resource group that existing IoT Hub and Stream Analytics belongs to
-![](./New_Existing_IoT_Stream.png)
+![](./New_Existing_IoT_Stream.PNG)
 4. Two lower case letters prefix is used as prefix of provisioned resources for distinguishing from other resources
 5. Check "*I agree to terms and conditions stated above*"
 6. Click **Purchase**
@@ -36,9 +36,9 @@ To enable end-to-end diagnostics in the above IoT Hub solution, a few resources 
 ### Modifying existing IoT Hub
 1. Open the existing IoT Hub in Azure portal
 2. Navigate to **Endpoints** under **MESSAGING**, click **Add** button to add end point
-![](./Add_Endpoint.png)
+![](./Add_Endpoint.PNG)
 3. Navigate to **Routes** under **MESSAGING**, click **Add** button to add two routes:
-![](./Add_EventRoute.png)
+![](./Add_EventRoute.PNG)
 ![](./Add_DiagRoute.PNG)
 
 ### Modifying existing Stream Analytics Job
