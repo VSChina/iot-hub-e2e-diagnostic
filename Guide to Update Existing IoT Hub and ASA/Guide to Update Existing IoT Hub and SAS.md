@@ -58,7 +58,7 @@ INTO
 FROM
     [diagInput]
 WHERE 
-    [x-correlation-id] IS NOT NULL
+    GetMetadataPropertyValue([diagInput], '[User].[x-correlation-id]') IS NOT NULL
 ```
 6. Click *Save* button to save the change
 7. Switch to **Overview** tab, click *Start* button to start streaming job
