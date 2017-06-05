@@ -19,19 +19,6 @@
             "minValue": 1,
             "defaultValue": 1
         },
-        "appInsightsLocation": {
-            "type": "string",
-            "allowedValues": [
-                "East US",
-                "North Europe",
-                "South Central US",
-                "West Europe"
-            ],
-            "defaultValue": "East US",
-            "metadata": {
-                "description": "Location for Appliation Insights"
-            }
-        },
         "repoUrl": {
             "type": "string",
             "defaultValue": "https://github.com/VSChina/iot-hub-e2e-diagnostic.git"
@@ -39,10 +26,10 @@
     },
     "variables": {
         "resourceLocation": "[resourceGroup().location]",
-        "appInsightsName": "[concat('ai', uniquestring(resourceGroup().id))]",
-        "hostingPlanName": "[concat('function', uniquestring(resourceGroup().id))]",
         "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]",
-        "streamAnalyticsJobName": "[concat('stream', uniquestring(resourceGroup().id))]"
+        "streamAnalyticsJobName": "[concat('stream', uniquestring(resourceGroup().id))]",
+        "eventHubNamespace": "[concat('eventhub', uniquestring(resourceGroup().id))]",
+        "eventhubResourceId":"[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventhubNamespace'), 'RootManageSharedAccessKey')]"
     },
     "resources": [
         {
@@ -62,29 +49,37 @@
                         "partitionCount": 2
                     }
                 },
-                "routing": {
-
-                },
+                "routing": {},
                 "enableFileUploadNotifications": false,
                 "features": "None"
             },
-            "dependsOn": [
-                
-            ]
-        },
-        {
-            "type": "microsoft.insights/components",
-            "kind": "other",
-            "name": "[variables('appInsightsName')]",
-            "apiVersion": "2014-04-01",
-            "location": "[parameters('appInsightsLocation')]",
-            "tags": {},
-            "properties": {
-                "ApplicationId": "[variables('appInsightsName')]"
-            },
             "dependsOn": []
         },
-        
+
+        {  
+            "apiVersion":"2015-08-01",
+            "name":"[variables('eventhubNamespace')]",
+            "type":"Microsoft.EventHub/namespaces",
+            "location":"[variables('resourceLocation')]",
+            "sku":{  
+                "name":"Standard",
+                "tier":"Standard"
+            },
+            "resources":[  
+                {
+                    "apiVersion":"2015-08-01",
+                    "name":"message",
+                    "type":"eventhubs",
+                    "dependsOn":[
+                        "[concat('Microsoft.EventHub/namespaces/', variables('eventhubNamespace'))]"
+                    ],
+                    "properties":{
+                        "path":"message"
+                    }
+                }
+            ]
+        },
+
         {
             "name": "[variables('streamAnalyticsJobName')]",
             "type": "Microsoft.StreamAnalytics/StreamingJobs",
@@ -99,10 +94,32 @@
                 "eventsOutOfOrderMaxDelayInSeconds": 0,
                 "eventsLateArrivalMaxDelayInSeconds": 5,
                 "dataLocale": "en-US",
-                "inputs": [{
-                    "name": "diagInput",
+                "inputs": [
+                    {
+                        "name": "Input",
+                        "properties": {
+                            "type": "stream",
+                            "serialization": {
+                                "type": "JSON",
+                                "properties": {
+                                    "encoding": "UTF8"
+                                }
+                            },
+                            "datasource": {
+                                "type": "Microsoft.Devices/IotHubs",
+                                "properties": {
+                                    "iotHubNamespace": "[parameters('iotHubName')]",
+                                    "sharedAccessPolicyName": "iothubowner",
+                                    "sharedAccessPolicyKey": "[listKeys(resourceId('Microsoft.Devices/IotHubs/Iothubkeys', parameters('iotHubName'), 'iothubowner'), '2016-02-03').primaryKey]",
+                                    "endpoint": "messages/events"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "outputs": [{
+                    "name": "Output",
                     "properties": {
-                        "type": "stream",
                         "serialization": {
                             "type": "JSON",
                             "properties": {
@@ -110,23 +127,21 @@
                             }
                         },
                         "datasource": {
-                            "type": "Microsoft.Devices/IotHubs",
+                            "type": "Microsoft.ServiceBus/EventHub",
                             "properties": {
-                                "iotHubNamespace": "[parameters('iotHubName')]",
-                                "sharedAccessPolicyName": "iothubowner",
-                                "sharedAccessPolicyKey": "[listKeys(resourceId('Microsoft.Devices/IotHubs/Iothubkeys', parameters('iotHubName'), 'iothubowner'), '2016-02-03').primaryKey]",
-                                "endpoint": "messages/events",
-                                "consumerGroupName": "arm"
+                                "serviceBusNamespace": "[variables('eventhubNamespace')]",
+                                "sharedAccessPolicyName": "RootManageSharedAccessKey",
+                                "sharedAccessPolicyKey": "[listkeys(variables('eventhubResourceId'), '2015-08-01').primaryKey]",
+                                "eventHubName": "message"
                             }
                         }
                     }
                 }],
-                "outputs": [],
                 "transformation": {
                     "name": "Transformation",
                     "properties": {
-                        "streamingUnits": 24,
-                        "query": "SELECT\r\n  *, GetMetadataPropertyValue([diagInput], '[User].[x-correlation-id]') AS 'x-correlation-id',System.Timestamp AS 'processed-utc-time'\r\nINTO\r\n  diagOutput\r\nFROM\r\n  diagInput\r\n  WHERE\r\n GetMetadataPropertyValue([input], '[User].[x-correlation-id]') IS NOT NULL"
+                        "streamingUnits": 6,
+                        "query": "SELECT\r\n  *\r\nINTO\r\n  Output\r\nFROM\r\n  Input\r\n "
                     }
                 }
             }
