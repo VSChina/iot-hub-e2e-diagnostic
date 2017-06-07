@@ -17,23 +17,23 @@
 ![](./Add_DiagRoute.PNG)
 
 ### Modifying existing Stream Analytics Job
-1. Open the existing Stream Analytics Job in Azure portal
+1. Open the existing Stream Analytics Job in Azure portal, make sure use portal [https://portal.azure.com/?feature.customportal=false](https://portal.azure.com/?feature.customportal=false) to workaround a known Azure issue
 2. Click **Overview** tab and click *Stop* button to stop streaming job
 3. Click **Outputs** tab under *JOB TOPOLOGY*
 4. Click *Add* button to add new output, then click *Create* button
 
    ![](./Stream_Diag_Output.png)
-5. Click **Query** tab under *JOB TOPOLOGY*, append the following query at the end of existing query, of course you need replace *diagInput* and *diagOutput* with corresponding input and output in your query:
+5. Click **Query** tab under *JOB TOPOLOGY*, append the following query at the end of existing query, of course you need replace *Input* and *diagOutput* with corresponding input and output in your query:
     ```sql
     SELECT
-        *, GetMetadataPropertyValue([diagInput], '[User].[x-correlation-id]') AS 'x-correlation-id',
-        GetMetadataPropertyValue([diagInput], '[User].[x-before-send-request]') AS 'x-before-send-request'
+        *, GetMetadataPropertyValue([Input], '[User].[x-correlation-id]') AS 'x-correlation-id',
+        GetMetadataPropertyValue([Input], '[User].[x-before-send-request]') AS 'x-before-send-request'
     INTO
         [diagOutput]
     FROM
-        [diagInput]
+        [Input]
     WHERE 
-        GetMetadataPropertyValue([diagInput], '[User].[x-correlation-id]') IS NOT NULL
+        GetMetadataPropertyValue([Input], '[User].[x-correlation-id]') IS NOT NULL
     ```
 6. Click *Save* button to save the change
 7. Switch to **Overview** tab, click *Start* button to start streaming job
