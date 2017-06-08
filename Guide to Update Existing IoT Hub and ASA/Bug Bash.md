@@ -27,7 +27,7 @@
     ```sql
     SELECT
         *, GetMetadataPropertyValue([Input], '[User].[x-correlation-id]') AS 'x-correlation-id',
-        GetMetadataPropertyValue([Input], '[User].[x-before-send-request]') AS 'x-before-send-request'
+        System.Timestamp AS 'processed-utc-time'
     INTO
         [diagOutput]
     FROM
@@ -64,7 +64,7 @@ First of all, *Application ID* of the Application Insights must be set in the We
 
     **Make sure you copy the key immediately.** You won't see it again once you close the panel.
 
-    Repeat the actions several times depending on the number of keys requried (We need 8 API Key for our scenario). And please make sure you copy the API Key immediately after it is generated.
+    Repeat the actions several times depending on the number of keys requried (We need **8** API Key for our scenario). And please make sure you copy the API Key immediately after it is generated.
 
     ![Fill in the panel](./description.png)
 
