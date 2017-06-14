@@ -264,6 +264,14 @@
                         {
                             "name": "SUBSCRIPTION_ID",
                             "value": "[subscription().subscriptionId]"
+                        },
+                        {
+                            "name": "RESOURCE_GROUP_NAME",
+                            "value": "[resourceGroup().id]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHTS_NAME",
+                            "value": "[parameters('aiName')]"
                         }
                     ]
                 },
