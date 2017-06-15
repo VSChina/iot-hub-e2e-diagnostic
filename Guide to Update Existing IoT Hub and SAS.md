@@ -39,4 +39,4 @@
 7. Switch to **Overview** tab, click *Start* button to start streaming job
 
 ## Configure Web App
-Please refer the document [Guide to Update Existing IoT Hub and SAS.](./Guide%20to%20Update%20Existing%20IoT%20Hub%20and%20SAS.md)
+Please refer the document [Guide to Update Existing IoT Hub and SAS.](./Guide%20to%20Config%20Application%20Insights%20Keys%20in%20Web%20APP.md)
