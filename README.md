@@ -36,7 +36,7 @@ Please refer the document [Guide to Update Existing IoT Hub and SAS.](./Guide%20
 ### Send D2C messages using E2E diagnostics layered Azure IoT SDKs
 There're three available layered SDKs, you may choose any of them for sending D2C messages:
 - [Azure IoT E2E Diagnostics Layered SDK for .NET](https://github.com/VSChina/azure-iot-diagnostics-csharp)
-- [Azure IoT E2E Diagnostics Layered SDK for C](https://github.com/erich-wang/azure-iot-sdk-c)
+- [Azure IoT E2E Diagnostics Layered SDK for C](https://github.com/erich-wang/azure-iot-sdk-c/tree/e2e-diag)
 - [Azure IoT E2E Diagnostics Layered SDK for JAVA](https://github.com/VSChina/azure-iot-diagnostics-java)
 
 As demo purpose, you may follow the steps below to use your computer to simulate device with .NET SDK:
