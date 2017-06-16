@@ -8,14 +8,9 @@
                 "description": "Prefix of prvisioned resources, it must be two lower case letters"
             }
         },
-
-
-
-
 		"iotHubName": {
             "type": "string"
         },
-
         "appInsightsLocation": {
             "type": "string",
             "allowedValues": [
