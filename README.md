@@ -21,7 +21,7 @@ To enable end-to-end diagnostics in the above IoT Hub solution, a few resources 
 ## Setup brand new IoT Hub solution with E2E diagnostics
 1. Navigate to [brand new IoT Hub solution branch](https://github.com/VSChina/iot-hub-e2e-diagnostic/tree/netnew_armtemplate)
 2. Click **Deploy to Azure**
-3. Select subscription and provide necessary settings
+3. Select subscription and provide necessary settings, and available location is 'West US, North Europe, East Asia, East Us, West Europe, South East Asia, Japan East, Japan West, Australia East, Australia South East, West US 2, West Central US'
 4. Check "*I agree to terms and conditions stated above*"
 5. Click **Purchase**
 6. After deploying success, update API Key for Web APP. Please refer: ["Guide to Config Application Insights Keys in Web APP"](./Guide%20to%20Config%20Application%20Insights%20Keys%20in%20Web%20APP.md)
@@ -45,8 +45,11 @@ As demo purpose, you may follow the steps below to use your computer to simulate
 git clone https://github.com/VSChina/azure-iot-diagnostics-csharp.git
 git checkout bugbash
 ```
-2. If having VS 2017 installed ready, you may open DeviceSDKWrapper.sln, fill correct deviceConnectionString value got from Azure portal in App.config in Sample project, run Sample project
+2. If having VS 2017 installed ready, you may open DeviceSDKWrapper.sln, fill correct deviceConnectionString value got from Azure portal in App.config in Sample project, and set it as startup project, then run Sample project
 3. If not having VS 2017, you may unzip Sample/Sample.zip, then fill correct deviceConnectionString value got from Azure portal in Sample.exe.config, then run Sample.exe
+
+### Start Stream Analytics job
+Among all resources deployed by ARM template, there's one Stream Analytics job resource starting with **stream**. Open this resource and navigate to its Overview tab, click start button to start the streaming job.
 
 ### Check Dashboard
 Among all resources deployed by ARM template, there's one App Service resource starting with **webapp**, find the App Service first, then navigate to its Overview tab, write down the **URL** value which is called **Dashboard**.
