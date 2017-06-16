@@ -43,8 +43,7 @@
         "functionAppName": "[concat('testfunction', uniquestring(resourceGroup().id))]",
         "hostingPlanName": "[concat('testfunction', uniquestring(resourceGroup().id))]",
         "funcAppsSiteName": "[concat('testfunction', uniquestring(resourceGroup().id))]",
-        "storageAccountName": "[concat('teststorage', uniquestring(resourceGroup().id))]",
-        "streamAnalyticsJobName": "[concat('stream', uniquestring(resourceGroup().id))]"
+        "storageAccountName": "[concat('teststorage', uniquestring(resourceGroup().id))]"
     },
     "resources": [
         {
