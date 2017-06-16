@@ -2,7 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-                "iotHubName": {
+        "twoLowercaseLettersPrefix":{
+            "type": "string",
+            "metadata": {
+                "description": "Prefix of prvisioned resources, it must be two lower case letters"
+            }
+        },
+        "iotHubName": {
             "type": "string"
         },
         "aiName": {
@@ -18,13 +24,13 @@
     },
     "variables": {
         "resourceLocation": "[resourceGroup().location]",
-        "eventHubNamespace": "[concat('eventhub', uniquestring(resourceGroup().id))]",
+        "eventHubNamespace": "[concat(parameters('twoLowercaseLettersPrefix'), 'eventhub', uniquestring(resourceGroup().id))]",
         "eventhubResourceId":"[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventhubNamespace'), 'RootManageSharedAccessKey')]",
-        "functionAppName": "[concat('function', uniquestring(resourceGroup().id))]",
-        "hostingPlanName": "[concat('function', uniquestring(resourceGroup().id))]",
-        "funcAppsSiteName": "[concat('function', uniquestring(resourceGroup().id))]",
-        "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]",
-        "streamAnalyticsJobName": "[concat('stream', uniquestring(resourceGroup().id))]",
+        "functionAppName": "[concat(parameters('twoLowercaseLettersPrefix'), 'function', uniquestring(resourceGroup().id))]",
+        "hostingPlanName": "[concat(parameters('twoLowercaseLettersPrefix'), 'function', uniquestring(resourceGroup().id))]",
+        "funcAppsSiteName": "[concat(parameters('twoLowercaseLettersPrefix'), 'function', uniquestring(resourceGroup().id))]",
+        "storageAccountName": "[concat(parameters('twoLowercaseLettersPrefix'), 'storage', uniquestring(resourceGroup().id))]",
+        "streamAnalyticsJobName": "[concat(parameters('twoLowercaseLettersPrefix'), 'stream', uniquestring(resourceGroup().id))]",
         "webAppName": "[concat('webApp', uniquestring(resourceGroup().id))]",
         "appHostingPlanName": "[concat('webHost', uniquestring(resourceGroup().id))]",
         "webAppSiteName": "[concat('webapp', uniquestring(resourceGroup().id))]",
