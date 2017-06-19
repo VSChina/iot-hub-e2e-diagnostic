@@ -16,18 +16,12 @@ The following figure gives one typical IoT Hub solution architecture:
 To enable end-to-end diagnostics in the above IoT Hub solution, a few resources should be provisioned. The following figure demonstrates new solution architecture with end-to-end diagnostics support:
 ![](./images/IoTHubSolution_E2EDiag.png)
 
-**Then you may follow 'Setup brand new IoT Hub solution with E2E diagnostics' or 'Setup E2E diagnostics based on existing IoT Hub and Stream Analytics' per your scenario.**
-
-## Setup brand new IoT Hub solution with E2E diagnostics
-1. Navigate to [brand new IoT Hub solution branch](https://github.com/VSChina/iot-hub-e2e-diagnostic/tree/netnew_armtemplate)
-2. Click **Deploy to Azure**
-3. Select subscription and provide necessary settings, and available location is 'West US, North Europe, East Asia, East Us, West Europe, South East Asia, Japan East, Japan West, Australia East, Australia South East, West US 2, West Central US'
-4. Check "*I agree to terms and conditions stated above*"
-5. Click **Purchase**
-6. After deploying success, update API Key for Web APP. Please refer: ["Guide to Config Application Insights Keys in Web APP"](./Guide%20to%20Config%20Application%20Insights%20Keys%20in%20Web%20APP.md)
-
-## Setup E2E diagnostics based on existing IoT Hub and Stream Analytics
-Please refer the document [Guide to Update Existing IoT Hub and SAS.](./Guide%20to%20Update%20Existing%20IoT%20Hub%20and%20SAS.md)
+## Provision necessary resources to support E2E Diagnostics
+Based on your current IoT solution, you may follow any of following steps to setup E2E diagnostics:
+- [Setup E2E Diagnostics solution from scratch](./Guide%20to%20Setup%20E2E%20Diagnostics%20Solution%20from%20Scratch.md)
+- [Setup E2E Diagnostics solution with existing IoT Hub and Stream Analytics](./Guide%20to%20Setup%20E2E%20Diagnostics%20Solution%20With%20Existing%20IoT%20Hub%20and%20Stream%20Analytics.md)
+- [Setup E2E Diagnostics solution with existing IoT Hub and Function App](./Guide%20to%20Setup%20E2E%20Diagnostics%20Solution%20with%20Existing%20IoT%20Hub%20and%20Function%20App.md)
+- [Setup E2E Diagnostics Solution with existing Application Insights](./Guide%20to%20Setup%20E2E%20Diagnostics%20Solution%20With%20Existing%20Application%20Insights.md)
 
 ## Verify E2E diagnostics
 
