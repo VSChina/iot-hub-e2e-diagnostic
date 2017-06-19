@@ -1,6 +1,6 @@
 # Enable E2E Diagnostics in a Full-Stack IoT Hub Solution
 
-This tutorial will desmonstrate how to enable end-to-end diagnostic in a full-stack IoT Hub solution.
+This tutorial will demonstrate how to enable end-to-end diagnostics in a full-stack IoT Hub solution.
 
 In this tutorial, you will learn:
 * IoT Hub solution architecture
@@ -35,7 +35,7 @@ There're three available layered SDKs, you may choose any of them for sending D2
 - [Azure IoT E2E Diagnostics Layered SDK for C](https://github.com/erich-wang/azure-iot-sdk-c/tree/e2e-diag)
 - [Azure IoT E2E Diagnostics Layered SDK for JAVA](https://github.com/VSChina/azure-iot-diagnostics-java)
 
-As demo purpose, you may follow the steps below to use your computer to simulate device with .NET SDK:
+For demo purpose, you may follow the steps below to use your computer to simulate device with .NET SDK:
 1. Get source code
 ```
 git clone https://github.com/VSChina/azure-iot-diagnostics-csharp.git
