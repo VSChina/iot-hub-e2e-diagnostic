@@ -9,12 +9,7 @@
 6. Click **Purchase**
 
 ## Modifying existing IoT Hub
-1. Open the existing IoT Hub in Azure portal
-2. Navigate to **Endpoints** under **MESSAGING**, click **Add** button to add end point
-![](./images/Add_Endpoint.PNG)
-3. Navigate to **Routes** under **MESSAGING**, click **Add** button to add two routes:
-![](./images/Add_EventRoute.PNG)
-![](./images/Add_DiagRoute.PNG)
+Please refer to [Modify Existing IoT Hub](./Modify%20Existing%20IoT%20Hub.md)
 
 ## Modifying existing Stream Analytics Job
 1. Open the existing Stream Analytics Job in Azure portal, make sure use portal [https://portal.azure.com/?feature.customportal=false](https://portal.azure.com/?feature.customportal=false) to workaround a known Azure issue
@@ -39,4 +34,4 @@
 7. Switch to **Overview** tab, click *Start* button to start streaming job
 
 ## Configure Web App
-Please refer the document [Guide to Update Existing IoT Hub and SAS.](./Guide%20to%20Config%20Application%20Insights%20Keys%20in%20Web%20APP.md)
+Please refer the document [Configure Application Insights Keys in Web App](./Guide%20to%20Config%20Application%20Insights%20Keys%20in%20Web%20APP.md)

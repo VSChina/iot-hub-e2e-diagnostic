@@ -1,4 +1,4 @@
-# Setup E2E Diagnostic solution based on existing IoT Hub and Azure Function
+# Setup E2E Diagnostic solution with existing IoT Hub and Function App
 ## Provision diagnostics resources using ARM template
 1. Navigate to [e2e diagnostics repo](https://github.com/VSChina/iot-hub-e2e-diagnostic/tree/existing_HUB_AF)
 2. Click **Deploy to Auzre**, it will navigate to azure portal
@@ -15,4 +15,4 @@ Please refer to [Modify Existing IoT Hub](./Modify%20Existing%20IoT%20Hub.md)
 Please refer to [Modify Existing Azure Function](./Modify%20Existing%20Azure%20Function.md)
 
 ## Configure Web App
-Please refer the document [Guide to Update Existing IoT Hub and SAS.](./Guide%20to%20Config%20Application%20Insights%20Keys%20in%20Web%20APP.md)
+Please refer the document [Configure Application Insights Keys in Web App](./Guide%20to%20Config%20Application%20Insights%20Keys%20in%20Web%20App.md)
