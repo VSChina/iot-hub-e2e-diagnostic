@@ -395,7 +395,7 @@
                         },
                         {
                             "name": "APPLICATION_INSIGHTS_NAME",
-                            "value": "[parameters('aiName')]"
+                            "value": "[parameters('existingAIName')]"
                         }
                     ]
                 },
