@@ -12,7 +12,7 @@
 Please refer to [Modify Existing IoT Hub](./Modify%20Existing%20IoT%20Hub.md)
 
 ## Modifying existing Stream Analytics Job
-1. Open the existing Stream Analytics Job in Azure portal, make sure use portal [https://portal.azure.com/?feature.customportal=false](https://portal.azure.com/?feature.customportal=false) to workaround a known Azure issue
+1. Open the existing Stream Analytics Job in Azure portal
 2. Click **Overview** tab and click *Stop* button to stop streaming job
 3. Click **Outputs** tab under *JOB TOPOLOGY*
 4. Click *Add* button to add new output, then click *Create* button
