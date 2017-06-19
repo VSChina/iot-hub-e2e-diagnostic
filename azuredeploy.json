@@ -5,12 +5,6 @@
         "iotHubName": {
             "type": "string"
         },
-        "aiName": {
-            "type": "string"
-        },
-        "aiResourceGroup": {
-            "type": "string"
-        },
         "iotHubSku": {
             "type": "string",
             "allowedValues": [
@@ -24,6 +18,12 @@
             "type": "int",
             "minValue": 1,
             "defaultValue": 1
+        },
+        "existingAIName": {
+            "type": "string"
+        },
+        "existingAIResourceGroup": {
+            "type": "string"
         },
         "repoUrl": {
             "type": "string",
@@ -211,7 +211,7 @@
                         },
                         {
                             "name": "APP_INSIGHTS_INSTRUMENTATION_KEY",
-                            "value": "[reference(resourceId(parameters('aiResourceGroup'), 'Microsoft.Insights/components', parameters('aiName')), '2014-04-01').InstrumentationKey]"
+                            "value": "[reference(resourceId(parameters('existingAIResourceGroup'), 'Microsoft.Insights/components', parameters('existingAIName')), '2014-04-01').InstrumentationKey]"
                         },
                         {
                             "name": "DIAG_ENDPOINT",
