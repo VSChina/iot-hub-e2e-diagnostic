@@ -57,14 +57,14 @@ Among all resources deployed by ARM template, there is one App Service resource 
 Open the url, switch to "Diagnostics Map", the number of messages should be 0.
 
 ### Update Device Sampling Rate
-1. Open **Dashboard**
-2. Set 'Status' ON, set 'Sample' value between 0-100
+1. Stay in the page, navigate back to **Home**
+2. Set 'Status' ON and 'Sample' value between 0-100
 
    ![](./images/Configure_Sample.png)
-3. 'Device List' is optional, leave it blank to update all devices, or set the value 'device1,device2,device3' as this format to update certain devices
+3. 'Device List' is optional, leave it blank to update all devices, or set the value 'device1,device2,device3' in this format to update certain devices
 
 ### Check Dashboard
-Connected device value should be 1 in 3-5 minutes. Failed message percentage should be 0 and the number of messages processed should be greater than 0.
+Connected device value should be updated to 1 in 3-5 minutes. Failed message percentage should be 0 and the number of messages processed should be greater than 0.
 
 ### Failed Messages Percentage
 **Failed messages** is a business logic concept, for example, we could treat a message as invalid if it misses the required fileds or the filed value is not as expected.
