@@ -4,8 +4,8 @@ This tutorial will desmonstrate how to enable end-to-end diagnostic in a full-st
 
 In this tutorial, you will learn:
 * IoT Hub solution architecture
-* Setup brand new IoT Hub solution with end-to-end diagnostics
-* Setup IoT Hub solution based on existing IoT Hub and Stream Analytics
+* Setup E2E diagnostics based on your existing IoT solution
+* Verify E2E diagnostics
 
 ## Prerequisite
 We suppose you had Azure account already, if not, please first [create Azure account](https://azure.microsoft.com/en-us/free/).
@@ -25,6 +25,8 @@ Based on your current IoT solution, you may follow any of following steps to set
 
 ## Verify E2E diagnostics
 
+After setting up E2E diagnostics, you need to verify whether it works as expected.
+
 ### Create at least one device in the IoT Hub
 
 ### Send D2C messages using E2E diagnostics layered Azure IoT SDKs
@@ -43,6 +45,7 @@ git checkout bugbash
 3. If not having VS 2017, you may unzip Sample/Sample.zip, then fill correct deviceConnectionString value got from Azure portal in Sample.exe.config, then run Sample.exe
 
 ### Start Stream Analytics job
+This step is necessary only if Stream Analytics is included in the IoT solution.
 Among all resources deployed by ARM template, there's one Stream Analytics job resource starting with **stream**. Open this resource and navigate to its Overview tab, click start button to start the streaming job.
 
 ### Check Dashboard
@@ -59,5 +62,5 @@ Open the Dashboard, switch to "Diagnostics Map", the number of messages should b
 ### Check Dashboard
 Wait around 3~5 mins, connected device should be 1, the number of messages processed should not be 0, the failed messages percentage should be 0
 
-### Failed Messages Percentage in ASA
+### Failed Messages Percentage
 Failed messages is business logic related concept, for example, we may define one message as failed one if there's no required fields or one field value is considered as invalid. In our sample solution, we define one message as invalid if missing 'temperature' field in the message. You need to refine the Azure Function per your business need. 
