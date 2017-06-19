@@ -79,7 +79,7 @@
                             "name": "Events",
                             "source": "DeviceMessages",
                             "endpointNames": ["events"],
-                            "condition": "IS_DEFINED(x-correlation-id)",
+                            "condition": "true",
                             "isEnabled": true
                         },
                         {
