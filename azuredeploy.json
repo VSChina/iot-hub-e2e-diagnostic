@@ -27,18 +27,22 @@
         },
         "repoUrl": {
             "type": "string",
-            "defaultValue": "https://github.com/VSChina/iot-hub-e2e-diagnostic"
+            "defaultValue": "https://github.com/VSChina/iot-hub-e2e-diagnostic.git"
         }
     },
     "variables": {
         "resourceLocation": "[resourceGroup().location]",
-        "appInsightsName": "[concat('ai', uniquestring(resourceGroup().id))]",
         "eventHubNamespace": "[concat('eventhub', uniquestring(resourceGroup().id))]",
         "eventhubResourceId":"[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventhubNamespace'), 'RootManageSharedAccessKey')]",
         "functionAppName": "[concat('function', uniquestring(resourceGroup().id))]",
         "hostingPlanName": "[concat('function', uniquestring(resourceGroup().id))]",
         "funcAppsSiteName": "[concat('function', uniquestring(resourceGroup().id))]",
-        "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]"
+        "storageAccountName": "[concat('storage', uniquestring(resourceGroup().id))]",
+        "streamAnalyticsJobName": "[concat('stream', uniquestring(resourceGroup().id))]",
+        "appHostingPlanName": "[concat('webHost', uniquestring(resourceGroup().id))]",
+        "webAppSiteName": "[concat('webapp', uniquestring(resourceGroup().id))]",
+        "iotHubResourceId": "[resourceId('Microsoft.Devices/Iothubs', parameters('iotHubName'))]",
+        "iotHubKeyResource": "[resourceId('Microsoft.Devices/Iothubs/Iothubkeys', parameters('iotHubName'), 'iothubowner')]"
     },
     "resources": [
         {
@@ -74,12 +78,14 @@
                             "name": "Events",
                             "source": "DeviceMessages",
                             "endpointNames": ["events"],
+                            "condition": "true",
                             "isEnabled": true
                         },
                         {
                             "name": "Diagnostics",
                             "source": "DeviceMessages",
                             "endpointNames": ["diagnostics"],
+                            "condition": "IS_DEFINED(x-correlation-id)",
                             "isEnabled": true
                         }
                     ]
@@ -121,6 +127,17 @@
                     ],
                     "properties":{
                         "path":"d2c-diagnostics"
+                    }
+                },
+                {
+                    "apiVersion":"2015-08-01",
+                    "name":"stream-diagnostics",
+                    "type":"eventhubs",
+                    "dependsOn":[
+                        "[concat('Microsoft.EventHub/namespaces/', variables('eventhubNamespace'))]"
+                    ],
+                    "properties":{
+                        "path":"stream-diagnostics"
                     }
                 }
             ]
@@ -240,7 +257,186 @@
                     ],
                     "properties": {
                         "RepoUrl": "[parameters('repoUrl')]",
-                        "branch": "functionapp",
+                        "branch": "funcapp_iot_stream",
+                        "IsManualIntegration": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "[variables('streamAnalyticsJobName')]",
+            "type": "Microsoft.StreamAnalytics/StreamingJobs",
+            "apiVersion": "2016-03-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "name": "Standard"
+                },
+                "outputErrorPolicy": "stop",
+                "eventsOutOfOrderPolicy": "adjust",
+                "eventsOutOfOrderMaxDelayInSeconds": 0,
+                "eventsLateArrivalMaxDelayInSeconds": 5,
+                "dataLocale": "en-US",
+                "inputs": [{
+                    "name": "input",
+                    "properties": {
+                        "type": "stream",
+                        "serialization": {
+                            "type": "JSON",
+                            "properties": {
+                                "encoding": "UTF8"
+                            }
+                        },
+                        "datasource": {
+                            "type": "Microsoft.Devices/IotHubs",
+                            "properties": {
+                                "iotHubNamespace": "[parameters('iotHubName')]",
+                                "sharedAccessPolicyName": "iothubowner",
+                                "sharedAccessPolicyKey": "[listKeys(resourceId('Microsoft.Devices/IotHubs/Iothubkeys', parameters('iotHubName'), 'iothubowner'), '2016-02-03').primaryKey]",
+                                "endpoint": "messages/events",
+                                "consumerGroupName": "arm"
+                            }
+                        }
+                    }
+                }],
+                "outputs": [{
+                    "name": "diagOutput",
+                    "properties": {
+                        "serialization": {
+                            "type": "JSON",
+                            "properties": {
+                                "encoding": "UTF8"
+                            }
+                        },
+                        "datasource": {
+                            "type": "Microsoft.ServiceBus/EventHub",
+                            "properties": {
+                                "serviceBusNamespace": "[variables('eventhubNamespace')]",
+                                "sharedAccessPolicyName": "RootManageSharedAccessKey",
+                                "sharedAccessPolicyKey": "[listkeys(variables('eventhubResourceId'), '2015-08-01').primaryKey]",
+                                "eventHubName": "stream-diagnostics"
+                            }
+                        }
+                    }
+                }],
+                "transformation": {
+                    "name": "Transformation",
+                    "properties": {
+                        "streamingUnits": 6,
+                        "query": "SELECT\r\n  *, GetMetadataPropertyValue([input], '[User].[x-correlation-id]') AS 'x-correlation-id',System.Timestamp AS 'processed-utc-time'\r\nINTO\r\n  diagOutput\r\nFROM\r\n  input\r\n  WHERE\r\n GetMetadataPropertyValue([input], '[User].[x-correlation-id]') IS NOT NULL"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "f1",
+                "capacity": 1
+            },
+            "kind": "app",
+            "name": "[variables('appHostingPlanName')]",
+            "apiVersion": "2015-08-01",
+            "location": "[variables('resourceLocation')]",
+            "properties": {
+                "name": "[variables('appHostingPlanName')]",
+                "numberOfWorkers": 0
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "name": "[variables('webAppSiteName')]",
+            "apiVersion": "2015-08-01",
+            "location": "[variables('resourceLocation')]",
+            "properties": {
+                "name": "[variables('webAppSiteName')]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "6.9.1"
+                        },
+                        {
+                            "name": "IOT_HUB_CONNECTION_STRING",
+                            "value": "[concat('HostName=', reference(variables('iotHubResourceId'), '2016-02-03').hostName, ';SharedAccessKeyName=', 'iothubowner', ';SharedAccessKey=', listkeys(variables('iotHubKeyResource'), '2016-02-03').primaryKey)]"
+                        },
+                        {
+                            "name": "APPLICAITON_INSIGHT_APP_ID",
+                            "value": "[[Your application insights application id]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY1",
+                            "value": "[[Your application insights api key 1]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY2",
+                            "value": "[[Your application insights api key 2]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY3",
+                            "value": "[[Your application insights api key 3]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY4",
+                            "value": "[[Your application insights api key 4]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHT_API_KEY5",
+                            "value": "[[Your application insights api key 5]"
+                        },
+                        {
+                            "name": "SUBSCRIPTION_ID",
+                            "value": "[subscription().subscriptionId]"
+                        },
+                        {
+                            "name": "RESOURCE_GROUP_NAME",
+                            "value": "[resourceGroup().id]"
+                        },
+                        {
+                            "name": "APPLICATION_INSIGHTS_NAME",
+                            "value": "[parameters('aiName')]"
+                        }
+                    ]
+                },
+                "hostNames": [
+                    "[concat(variables('webAppSiteName'),'.azurewebsites.net')]"
+                ],
+                "enabledHostNames": [
+                    "[concat(variables('webAppSiteName'),'.azurewebsites.net')]",
+                    "[concat(variables('webAppSiteName'),'.scm.azurewebsites.net')]"
+                ],
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(variables('webAppSiteName'),'.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    },
+                    {
+                        "name": "[concat(variables('webAppSiteName'),'.scm.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appHostingPlanName'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('appHostingPlanName'))]",
+                "[resourceId('Microsoft.Devices/Iothubs', parameters('iotHubName'))]"
+            ],
+            "resources": [
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "web",
+                    "type": "sourcecontrols",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', variables('webAppSiteName'))]"
+                    ],
+                    "properties": {
+                        "RepoUrl": "https://github.com/VSChina/azure-iot-diagnostics-api",
+                        "branch": "release",
                         "IsManualIntegration": true
                     }
                 }
