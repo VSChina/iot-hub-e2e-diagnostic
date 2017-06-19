@@ -1,4 +1,4 @@
-# Guide to Setup E2E Diagnostics Solution With Existing Application Insights
+# Guide to Setup E2E Diagnostics Solution with Existing Application Insights
 
 ## Provision diagnostics resources using ARM template
 1. Navigate to [e2e diagnostics repo](https://github.com/VSChina/iot-hub-e2e-diagnostic/tree/existing_AI)
@@ -6,8 +6,8 @@
 ![](./images/Existing_AI.PNG)
 3. Select subscription
 4. Select existing resource group
-5. Type in an iothub name that you want to create
-6. Select the iot hub sku level
+5. Type in an IoT Hub name that you want to create
+6. Select the IoT Hub sku level
 7. Fill in the existing application insights name and the resource group name that it belongs to
 8. Check "*I agree to terms and conditions stated above*"
 9. Click **Purchase** to trigger the deploy
