@@ -32,7 +32,6 @@
     },
     "variables": {
         "resourceLocation": "[resourceGroup().location]",
-        "appInsightsName": "[concat('ai', uniquestring(resourceGroup().id))]",
         "eventHubNamespace": "[concat('eventhub', uniquestring(resourceGroup().id))]",
         "eventhubResourceId":"[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventhubNamespace'), 'RootManageSharedAccessKey')]",
         "functionAppName": "[concat('function', uniquestring(resourceGroup().id))]",
@@ -396,7 +395,7 @@
                         },
                         {
                             "name": "APPLICATION_INSIGHTS_NAME",
-                            "value": "[variables('appInsightsName')]"
+                            "value": "[parameters('aiName')]"
                         }
                     ]
                 },
