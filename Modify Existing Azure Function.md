@@ -91,4 +91,5 @@ public static void Run(EventData myEventHubMessage, TraceWriter log)
         customProperties["DiagnosticErrorMessage"] = "Fail to read temperature sensor data";
         telemetry.TrackMetric("StreamInvalidMessage", 1, customProperties);
     }
+}
 ```
