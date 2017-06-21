@@ -30,10 +30,14 @@ This step is necessary only if Stream Analytics is included in the IoT solution.
 Among all resources deployed by ARM template, there is one Stream Analytics job resource starting with **stream**. Open this resource and navigate to its Overview tab, click start button to start the streaming job.
 
 ## Verify E2E Diagnostics
-
 After setting up E2E diagnostics, there are several steps to do to verify if it works as expected.
 
 ### Create At Least One Device In IoT Hub
+1. Navigate to your IoT Hub in Azure portal
+2. Click “Device Explorer” tab, then click “Add” button to add one device
+3. Click the device you just created to copy **Device Connection String** which we’ll use later
+
+ ![](./images/Create_Device.jpg)
 
 ### Send D2C Messages Using E2E Diagnostics Layered Azure IoT SDKs
 There are three available layered SDKs, you could choose any of them to send D2C messages:
@@ -47,7 +51,7 @@ For demo purpose, you may follow the steps below to use your computer as a simul
 git clone https://github.com/VSChina/azure-iot-diagnostics-csharp.git
 git checkout bugbash
 ```
-2. If you have VS 2017 installed already, you could just open DeviceSDKWrapper.sln with it, get the deviceConnectionString from azure portal and fill it in Sample project app.config to run
+2. If you have VS 2017 installed already, you could just open DeviceSDKWrapper.sln, fill in the app.config of Sample project with **Device Connection String** and run it.
 3. If not, you could unzip Sample/Sample.zip, update deviceConnectionString in Sample.exe.config with the value get from azure portal, then run Sample.exe
 
 ### Check Dashboard
