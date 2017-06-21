@@ -25,6 +25,10 @@ Based on your current IoT solution, you could follow any of following steps to s
 - [Setup E2E Diagnostics solution with existing IoT Hub and Function App](./Guide%20to%20Setup%20E2E%20Diagnostics%20Solution%20with%20Existing%20IoT%20Hub%20and%20Function%20App.md)
 - [Setup E2E Diagnostics Solution with existing Application Insights](./Guide%20to%20Setup%20E2E%20Diagnostics%20Solution%20With%20Existing%20Application%20Insights.md)
 
+### Start Stream Analytics Job
+This step is necessary only if Stream Analytics is included in the IoT solution.
+Among all resources deployed by ARM template, there is one Stream Analytics job resource starting with **stream**. Open this resource and navigate to its Overview tab, click start button to start the streaming job.
+
 ## Verify E2E Diagnostics
 
 After setting up E2E diagnostics, there are several steps to do to verify if it works as expected.
@@ -45,10 +49,6 @@ git checkout bugbash
 ```
 2. If you have VS 2017 installed already, you could just open DeviceSDKWrapper.sln with it, get the deviceConnectionString from azure portal and fill it in Sample project app.config to run
 3. If not, you could unzip Sample/Sample.zip, update deviceConnectionString in Sample.exe.config with the value get from azure portal, then run Sample.exe
-
-### Start Stream Analytics Job
-This step is necessary only if Stream Analytics is included in the IoT solution.
-Among all resources deployed by ARM template, there is one Stream Analytics job resource starting with **stream**. Open this resource and navigate to its Overview tab, click start button to start the streaming job.
 
 ### Check Dashboard
 Among all resources deployed by ARM template, there is one App Service resource starting with **webapp**, find the App Service first, then navigate to its Overview tab, make a note of the **URL** value.
