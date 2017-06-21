@@ -71,5 +71,5 @@ Open the url, switch to "Diagnostics Map", the number of messages should be 0.
 Connected device value should be updated to 1 in 3-5 minutes. Failed message percentage should be 0 and the number of messages processed should be greater than 0.
 
 ### Failed Messages Percentage
-**Failed messages** is a business logic concept, for example, we could treat a message as invalid if it misses the required fileds or the filed value is not as expected.
+**Failed messages** is a business logic concept, for example, we could treat a message as invalid if it misses the required fields or the field value is not as expected.
 In our sample solution, we treat a message as invalid if 'temperature' field is missing. You could re-define the Azure Function per your business need.
