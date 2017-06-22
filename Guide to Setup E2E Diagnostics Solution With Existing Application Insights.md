@@ -14,4 +14,4 @@
 
 ## Configure application insights keys in Web App
 After all resources deployed successfully, find the existing application insights, copy the application id, generate necessary application keys and paste them in corresponding place following this link:
-[Configure Application Insights Keys in Web App](./Guide%20to%20Config%20Application%20Insights%20Keys%20in%20Web%20App.md)
+[Configure Application Insights Keys in Web App](./Guide%20to%20Config%20Application%20Insights%20Keys%20in%20Web%20APP.md)
