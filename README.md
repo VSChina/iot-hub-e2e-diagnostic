@@ -51,7 +51,7 @@ For demo purpose, you may follow the steps below to use your computer as a simul
 git clone https://github.com/VSChina/azure-iot-diagnostics-csharp.git
 git checkout bugbash
 ```
-2. If you have VS 2017 installed already, you could just open DeviceSDKWrapper.sln, fill in the app.config of Sample project with **Device Connection String** and run it.
+2. If you have VS 2017 installed already, you could just open DeviceSDKWrapper.sln, fill in the app.config of Sample project with **Device Connection String**, set the Sample project as startup project and run it.
 3. If not, you could unzip Sample/Sample.zip, update deviceConnectionString in Sample.exe.config with the value get from azure portal, then run Sample.exe
 
 ### Check Dashboard
