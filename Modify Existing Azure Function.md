@@ -23,73 +23,93 @@ If your current environment doesn't meet the prerequisites, you can refer these 
 
 ![Function App Settings 1](./images/Function.png)
 
-3. Insert code to send Telemetry to Application Insights
+3. Open Azure Function -> Your Azure Function -> View files on Right Panel -> Open project.json, add dependencies as below:
+
+```json
+{
+  "frameworks": {
+    "net46":{
+      "dependencies": {
+        "Microsoft.ApplicationInsights": "2.1.0",
+        "WindowsAzure.ServiceBus":"3.4.2"
+      }
+    }
+   }
+}
+```
+
+4. Insert code in your Azure function to send Telemetry to Application Insights, please note:
+- You may need change the parameter name **d2cMessage** to comply with your configuration.
+- You need to define your own logic about invalid message criteria
 
 #### Send Azure Function latency to AI
 ```cs
-public static void Run(EventData myEventHubMessage, TraceWriter log)
+#r "System.Web.Extensions"
+#r "Microsoft.ServiceBus"
+
+using System;
+using System.Net;
+using System.Reflection;
+using System.Text;
+using System.Web.Script.Serialization;
+
+using Microsoft.ServiceBus.Common;
+using Microsoft.ServiceBus.Messaging;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility;
+
+public static void Run(EventData d2cMessage, TraceWriter log)
 {
-    // Your business code here
-
-    DateTime processedTime = DateTime.UtcNow;
-    TelemetryClient telemetry = new TelemetryClient();
-    telemetry.InstrumentationKey = System.Environment.GetEnvironmentVariable("APP_INSIGHTS_INSTRUMENTATION_KEY");
-
-    const string enqueueTimeKey = "EnqueuedTime";
-    const string processedTimeKey = "processed-utc-time";
+    //Your business code here
+    ...
+    
+    //only process messages containing diagnostics property
     const string correlationIdKey = "x-correlation-id";
-    const string iotHubKey = "IoTHub";
-
-    bool validMessage = false;
-    var message = Encoding.UTF8.GetString(myEventHubMessage.GetBytes());
-    var serializer = new JavaScriptSerializer();
-    var properties = serializer.Deserialize<Dictionary<string, object>>(message);
-
-    DateTime enqueueTime;
-    if (properties.ContainsKey(correlationIdKey) &&
-        properties.ContainsKey(iotHubKey) &&
-        properties.ContainsKey("temperature"))
+    if (d2cMessage.Properties.ContainsKey(correlationIdKey))
     {
-        var iotProperties = properties[iotHubKey] as Dictionary<string, object>;
-        if (iotProperties.ContainsKey(enqueueTimeKey) &&
-            DateTime.TryParse(iotProperties[enqueueTimeKey].ToString(), out enqueueTime))
+        DateTime processedTime = DateTime.UtcNow;
+        TelemetryClient telemetry = new TelemetryClient();
+        telemetry.InstrumentationKey = System.Environment.GetEnvironmentVariable("APP_INSIGHTS_INSTRUMENTATION_KEY");
+
+        const string timeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
+        var messageData = Encoding.UTF8.GetString(d2cMessage.GetBytes());
+        var serializer = new JavaScriptSerializer();
+        Dictionary<string, object> messageDictionary = null;
+        try
         {
-            var latencyInMilliseconds = (processedTime - enqueueTime).TotalMilliseconds;
-            log.Info(iotProperties[enqueueTimeKey].ToString());
-            log.Info(properties[processedTimeKey].ToString());
+            messageDictionary = serializer.Deserialize<Dictionary<string, object>>(messageData);
+        }
+        catch
+        {
+            //ignore error if could not convert to dictionary
+        }
+
+        //check whether it is valid message, you should define your own logic about *valid*  
+        if(messageDictionary != null && messageDictionary.ContainsKey("temperature"))
+        {
+            var latencyInMilliseconds = (d2cMessage.EnqueuedTimeUtc - processedTime).TotalMilliseconds;
             latencyInMilliseconds = Math.Max(0, latencyInMilliseconds);
-            var customeProperties = new Dictionary<string, string>()
+            var properties = new Dictionary<string, string>()
                         {
-                            {correlationIdKey, properties[correlationIdKey].ToString()},
-                            {enqueueTimeKey, iotProperties[enqueueTimeKey].ToString()},
-                            {processedTimeKey, properties[processedTimeKey].ToString()}
+                            {correlationIdKey, d2cMessage.Properties[correlationIdKey].ToString() },
+                            {"EnqueuedTimeUtc", d2cMessage.EnqueuedTimeUtc.ToString(timeFormat) },
+                            {"ProcessedTimeUtc", processedTime.ToString(timeFormat) }
                         };
 
-            telemetry.TrackMetric("StreamJobLatency", latencyInMilliseconds, customeProperties);
-
-            validMessage = true;
+            telemetry.TrackMetric("FunctionLatency", latencyInMilliseconds, properties);
         }
-    }
-    if (!validMessage)
-    {
-        var customProperties = new Dictionary<string, string>();
-        foreach (var keyValue in properties)
+        else
         {
-            if (keyValue.Key == iotHubKey || keyValue.Key == "User")
-            {
-                var iotProperties = keyValue.Value as Dictionary<string, object>;
-                foreach (var iotKV in iotProperties)
-                {
-                    customProperties[keyValue.Key + "." + iotKV.Key] = iotKV.Value == null ? "null" : iotKV.Value.ToString();
-                }
-            }
-            else
+            var customProperties = new Dictionary<string, string>();
+            foreach (var keyValue in d2cMessage.Properties)
             {
                 customProperties[keyValue.Key] = keyValue.Value.ToString();
             }
+            customProperties["MessageBody"] = messageData;
+            customProperties["DiagnosticErrorMessage"] = "Fail to read temperature sensor data";
+            telemetry.TrackEvent("FunctionInvalidMessage", customProperties);
         }
-        customProperties["DiagnosticErrorMessage"] = "Fail to read temperature sensor data";
-        telemetry.TrackMetric("StreamInvalidMessage", 1, customProperties);
     }
 }
 ```
