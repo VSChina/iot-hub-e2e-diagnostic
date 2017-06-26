@@ -16,7 +16,7 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 
-public static void Run(EventData d2cMessage, TraceWriter log)
+public static void Run(EventData d2cMessage, TraceWriter log, ICollector<E2EItem> latencyTable, ICollector<E2EItem> errorTable)
 {
     TelemetryClient telemetry = new TelemetryClient();
     telemetry.InstrumentationKey = System.Environment.GetEnvironmentVariable("APP_INSIGHTS_INSTRUMENTATION_KEY");
@@ -26,6 +26,7 @@ public static void Run(EventData d2cMessage, TraceWriter log)
     const string correlationIdKey = "x-correlation-id";
     const string iotHubKey = "IoTHub";
 
+    DateTime epochTime = new DateTime(1970, 1, 1);
     bool validMessage = false;
     var message = Encoding.UTF8.GetString(d2cMessage.GetBytes());
     var serializer = new JavaScriptSerializer();
@@ -55,6 +56,14 @@ public static void Run(EventData d2cMessage, TraceWriter log)
                             };
 
                 telemetry.TrackMetric("StreamJobLatency", latencyInMilliseconds, customeProperties);
+                latencyTable.Add(new E2EItem
+                {
+                    PartitionKey = ((int)(DateTime.UtcNow - epochTime).TotalSeconds).ToString(),
+                    RowKey = Guid.NewGuid().ToString(),
+                    DiagName = "FunctionLatency",
+                    Latency = latencyInMilliseconds,
+                    Properties = properties
+                });
 
                 validMessage = true;
             }
@@ -79,6 +88,23 @@ public static void Run(EventData d2cMessage, TraceWriter log)
             }
             customProperties["DiagnosticErrorMessage"] = "Fail to read temperature sensor data";
             telemetry.TrackMetric("StreamInvalidMessage", 1, customProperties);
+            errorTable.Add(new E2EItem
+            {
+                PartitionKey = ((int)(DateTime.UtcNow - epochTime).TotalSeconds).ToString(),
+                RowKey = Guid.NewGuid().ToString(),
+                DiagName = "FunctionInvalidMessage",
+                Latency = 0,
+                Properties = customProperties
+            });
         }
     }
+}
+
+public class E2EItem
+{
+    public string PartitionKey { get; set; }
+    public string RowKey { get; set; }
+    public string DiagName {get; set; }
+    public int Latency{get; set;}
+    public Dictionary<string, string> Properties {get; set;}
 }

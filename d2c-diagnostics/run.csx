@@ -9,7 +9,7 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 
-public static void Run(EventData d2cMessage, TraceWriter log)
+public static void Run(EventData d2cMessage, TraceWriter log, ICollector<E2EItem> latencyTable)
 {
     TelemetryClient telemetry = new TelemetryClient();
     telemetry.InstrumentationKey = System.Environment.GetEnvironmentVariable("APP_INSIGHTS_INSTRUMENTATION_KEY");
@@ -31,6 +31,14 @@ public static void Run(EventData d2cMessage, TraceWriter log)
                     };
         log.Info(latencyInMilliseconds.ToString());
         telemetry.TrackMetric("D2CLatency", latencyInMilliseconds, properties);
+        latencyTable.Add(new E2EItem
+            {
+                PartitionKey = ((int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds).ToString(),
+                RowKey = Guid.NewGuid().ToString(),
+                DiagName = "FunctionLatency",
+                Latency = latencyInMilliseconds,
+                Properties = properties
+            });
     }
     else
     {
@@ -42,3 +50,13 @@ public static void Run(EventData d2cMessage, TraceWriter log)
         telemetry.TrackEvent("D2CInvalidDiagMsg", properties);
     }
 }
+
+public class E2EItem
+{
+    public string PartitionKey { get; set; }
+    public string RowKey { get; set; }
+    public string DiagName {get; set; }
+    public int Latency{get; set;}
+    public Dictionary<string, string> Properties {get; set;}
+}
+

@@ -7,6 +7,13 @@
       "path": "d2c-diagnostics",
       "connection": "DIAG_ENDPOINT",
       "consumerGroup": "$Default"
+    },
+    {
+      "type": "table",
+      "name": "latencyTable",
+      "tableName": "D2CLatencyTable",
+      "connection": "AzureWebJobsDashboard",
+      "direction": "out"
     }
   ],
   "disabled": false

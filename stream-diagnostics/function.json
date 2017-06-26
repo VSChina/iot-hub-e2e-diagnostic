@@ -7,6 +7,20 @@
       "path": "stream-diagnostics",
       "connection": "DIAG_ENDPOINT",
       "consumerGroup": "$Default"
+    },
+    {
+      "type": "table",
+      "name": "latencyTable",
+      "tableName": "FuncLatencyTable",
+      "connection": "AzureWebJobsDashboard",
+      "direction": "out"
+    },
+    {
+      "type": "table",
+      "name": "errorTable",
+      "tableName": "FuncErrorTable",
+      "connection": "AzureWebJobsDashboard",
+      "direction": "out"
     }
   ],
   "disabled": false
