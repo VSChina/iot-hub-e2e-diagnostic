@@ -60,7 +60,7 @@ public static void Run(EventData d2cMessage, TraceWriter log, ICollector<E2EItem
                 {
                     PartitionKey = ((int)(DateTime.UtcNow - epochTime).TotalSeconds).ToString(),
                     RowKey = Guid.NewGuid().ToString(),
-                    DiagName = "FunctionLatency",
+                    DiagName = "StreamJobLatency",
                     Latency = latencyInMilliseconds,
                     Properties = properties
                 });
@@ -92,7 +92,7 @@ public static void Run(EventData d2cMessage, TraceWriter log, ICollector<E2EItem
             {
                 PartitionKey = ((int)(DateTime.UtcNow - epochTime).TotalSeconds).ToString(),
                 RowKey = Guid.NewGuid().ToString(),
-                DiagName = "FunctionInvalidMessage",
+                DiagName = "StreamInvalidMessage",
                 Latency = 0,
                 Properties = customProperties
             });

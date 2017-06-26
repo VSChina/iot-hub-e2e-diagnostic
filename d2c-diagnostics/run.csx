@@ -35,7 +35,7 @@ public static void Run(EventData d2cMessage, TraceWriter log, ICollector<E2EItem
             {
                 PartitionKey = ((int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds).ToString(),
                 RowKey = Guid.NewGuid().ToString(),
-                DiagName = "FunctionLatency",
+                DiagName = "D2CLatency",
                 Latency = latencyInMilliseconds,
                 Properties = properties
             });
