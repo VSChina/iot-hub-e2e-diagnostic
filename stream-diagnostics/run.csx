@@ -62,7 +62,7 @@ public static void Run(EventData d2cMessage, TraceWriter log, ICollector<E2EItem
                     RowKey = Guid.NewGuid().ToString(),
                     DiagName = "StreamJobLatency",
                     Latency = (int)latencyInMilliseconds,
-                    Properties = properties
+                    Properties = customeProperties
                 });
 
                 validMessage = true;
