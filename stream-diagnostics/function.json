@@ -11,14 +11,14 @@
     {
       "type": "table",
       "name": "latencyTable",
-      "tableName": "FuncLatencyTable",
+      "tableName": "StreamLatencyTable",
       "connection": "AzureWebJobsDashboard",
       "direction": "out"
     },
     {
       "type": "table",
       "name": "errorTable",
-      "tableName": "FuncErrorTable",
+      "tableName": "StreamErrorTable",
       "connection": "AzureWebJobsDashboard",
       "direction": "out"
     }
