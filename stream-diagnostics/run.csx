@@ -61,7 +61,7 @@ public static void Run(EventData d2cMessage, TraceWriter log, ICollector<E2EItem
                     PartitionKey = ((int)(DateTime.UtcNow - epochTime).TotalSeconds).ToString(),
                     RowKey = Guid.NewGuid().ToString(),
                     DiagName = "StreamJobLatency",
-                    Latency = latencyInMilliseconds,
+                    Latency = (int)latencyInMilliseconds,
                     Properties = properties
                 });
 
