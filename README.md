@@ -54,11 +54,11 @@ git checkout bugbash
 2. If you have VS 2017 installed already, you could just open DeviceSDKWrapper.sln, fill in the app.config of Sample project with **Device Connection String**, set the Sample project as startup project and run it.
 3. If not, you could unzip Sample/Sample.zip, update deviceConnectionString in Sample.exe.config with the value get from azure portal, then run Sample.exe
 
-### Check Dashboard
-Among all resources deployed by ARM template, there is one App Service resource starting with **webapp**, find the App Service first, then navigate to its Overview tab, make a note of the **URL** value.
+### Open Dashboard
+Among all resources deployed by ARM template, there is one App Service resource starting with **webapp**, find the App Service first, then navigate to its Overview tab, make a note of the **URL** value which is called Dashboard.
 
    ![](images/Dashboard.png)
-Open the url, switch to "Diagnostics Map", the number of messages should be 0.
+Open the dashboard, switch to "Diagnostics Map", the number of messages should be 0.
 
 ### Update Device Sampling Rate
 1. Stay in the page, navigate back to **Home**
@@ -68,8 +68,8 @@ Open the url, switch to "Diagnostics Map", the number of messages should be 0.
 3. 'Device List' is optional, leave it blank to update all devices, or set the value 'device1,device2,device3' in this format to update certain devices
 
 ### Check Dashboard
-Connected device value should be updated to 1 in 3-5 minutes. Failed message percentage should be 0 and the number of messages processed should be greater than 0.
+Check "Diagnostics Map" in Dashboard, connected device value should be 1. Wait for 5~10 minutes because of delay in AI, the value of "Msgs Received/Msg Processed/Avg Latency/Max Latency" should be changed to some value other than original 0; Failures should be 0 always.
 
 ### Failed Messages Percentage
 **Failed messages** is a business logic concept, for example, we could treat a message as invalid if it misses the required fields or the field value is not as expected.
-In our sample solution, we treat a message as invalid if 'temperature' field is missing. You could re-define the Azure Function per your business need.
+In our sample solution, we treat a message as invalid if 'temperature' field is missing. You could re-define the Azure Function per your business need, then send some invalid messages as sample, finally(maybe 5~10 minutes delay) you should notice that the number of "Failures" in Dashboard becomes > 0.
