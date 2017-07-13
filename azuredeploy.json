@@ -383,8 +383,7 @@
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appHostingPlanName'))]"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', variables('appHostingPlanName'))]",
-                "[resourceId('Microsoft.Devices/Iothubs', parameters('iotHubName'))]"
+                "[resourceId('Microsoft.Web/serverfarms', variables('appHostingPlanName'))]"
             ],
             "resources": [
                 {
