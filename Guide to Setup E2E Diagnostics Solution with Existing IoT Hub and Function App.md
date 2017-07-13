@@ -1,7 +1,7 @@
 # Setup E2E Diagnostic solution with existing IoT Hub and Function App
 ## Provision diagnostics resources using ARM template
 1. Navigate to [e2e diagnostics repo](https://github.com/VSChina/iot-hub-e2e-diagnostic/tree/existing_HUB_AF)
-2. Click **Deploy to Auzre**, it will navigate to azure portal
+2. Click **Deploy to Azure**, it will navigate to azure portal
 3. Select subscription and resource group that existing IoT Hub and Azure Function belongs to
 ![](./images/New_E2E_IoT_AF.PNG)
 4. Two lower case letters prefix is used as prefix of provisioned resources for distinguishing from other resources

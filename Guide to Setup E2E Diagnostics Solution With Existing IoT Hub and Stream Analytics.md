@@ -1,7 +1,7 @@
 # Setup E2E Diagnostics Solution With Existing IoT Hub and Stream Analytics
 ## Provision diagnostics resources using ARM template
 1. Navigate to [E2E Diagnostics Repo](https://github.com/VSChina/iot-hub-e2e-diagnostic/tree/existing_HUB_SA)
-2. Click **Deploy to Auzre**
+2. Click **Deploy to Azure**
 3. Use the same subscription and resource group that your existing IoT Hub and Stream Analytics use
 
    ![](./images/New_Existing_IoT_Stream.PNG)

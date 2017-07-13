@@ -2,7 +2,7 @@
 
 ## Provision diagnostics resources using ARM template
 1. Navigate to [e2e diagnostics repo](https://github.com/VSChina/iot-hub-e2e-diagnostic/tree/existing_AI)
-2. Click **Deploy to Auzre**, it will navigate you to azure portal
+2. Click **Deploy to Azure**, it will navigate you to azure portal
 ![](./images/Existing_AI.PNG)
 3. Select subscription
 4. Select existing resource group

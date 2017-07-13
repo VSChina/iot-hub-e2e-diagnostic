@@ -1,7 +1,7 @@
 ## Provision diagnostics resources using ARM template
 
 1. Navigate to [e2e diagnostics repo](https://github.com/VSChina/iot-hub-e2e-diagnostic/tree/devkit_shakeshake)
-2. Click **Deploy to Auzre**, it will navigate to azure portal
+2. Click **Deploy to Azure**, it will navigate to azure portal
 3. Select subscription and resource group that existing IoT Hub belongs to, and enter your existing IoT Hub name
 ![](images/Provision.png)
 5. Select the checkbox "*I agree to terms and conditions stated above*"
