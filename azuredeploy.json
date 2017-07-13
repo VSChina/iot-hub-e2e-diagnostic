@@ -11,20 +11,6 @@
         "iotHubName": {
             "type": "string"
         },
-        "iotHubSku": {
-            "type": "string",
-            "allowedValues": [
-                "F1",
-                "S1",
-                "S2"
-            ],
-            "defaultValue": "F1"
-        },
-        "iotHubCapacity": {
-            "type": "int",
-            "minValue": 1,
-            "defaultValue": 1
-        },
         "appInsightsLocation": {
             "type": "string",
             "allowedValues": [
@@ -59,58 +45,6 @@
         "iotHubKeyResource": "[resourceId('Microsoft.Devices/Iothubs/Iothubkeys', parameters('iotHubName'), 'iothubowner')]"
     },
     "resources": [
-        {
-            "type": "Microsoft.Devices/IotHubs",
-            "sku": {
-                "name": "[parameters('iotHubSku')]",
-                "capacity": "[parameters('iotHubCapacity')]"
-            },
-            "name": "[parameters('iotHubName')]",
-            "apiVersion": "2016-02-03",
-            "location": "[variables('resourceLocation')]",
-            "tags": {},
-            "properties": {
-                "eventHubEndpoints": {
-                    "events": {
-                        "retentionTimeInDays": 1,
-                        "partitionCount": 2
-                    }
-                },
-                "routing": {
-                    "endpoints": {
-                        "eventHubs": [
-                            {
-                                "connectionString": "[concat(listkeys(variables('eventhubResourceId'), '2015-08-01').primaryConnectionString, ';EntityPath=d2c-diagnostics')]",
-                                "name": "diagnostics",
-                                "subscriptionId": "[subscription().subscriptionId]",
-                                "resourceGroup": "[resourceGroup().name]"
-                            }
-                        ]
-                    },
-                    "routes": [
-                        {
-                            "name": "Events",
-                            "source": "DeviceMessages",
-                            "endpointNames": ["events"],
-                            "condition": "true",
-                            "isEnabled": true
-                        },
-                        {
-                            "name": "Diagnostics",
-                            "source": "DeviceMessages",
-                            "endpointNames": ["diagnostics"],
-                            "condition": "IS_DEFINED(x-correlation-id)",
-                            "isEnabled": true
-                        }
-                    ]
-                },
-                "enableFileUploadNotifications": false,
-                "features": "None"
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.EventHub/namespaces', variables('eventhubNamespace'))]"
-            ]
-        },
         {
             "type": "microsoft.insights/components",
             "kind": "other",
