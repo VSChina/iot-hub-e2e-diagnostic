@@ -37,8 +37,7 @@ Please refer the document [Configure Application Insights Keys in Web App](./Gui
 
 
 ### Start Stream Analytics Job
-This step is necessary only if Stream Analytics is included in the IoT solution.
-Among all resources deployed by ARM template, there is one Stream Analytics job resource starting with **stream**. Open this resource and navigate to its Overview tab, click start button to start the streaming job.
+Among all resources deployed by ARM template, there is one Stream Analytics job resource starting with *two letters prefix*+**stream**. Open this resource and navigate to its Overview tab, click start button to start the streaming job.
 
 ## Verify E2E Diagnostics
 After setting up E2E diagnostics, there are several steps to do to verify if it works as expected.
