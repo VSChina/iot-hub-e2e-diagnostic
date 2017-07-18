@@ -43,7 +43,7 @@
    ```
 
 
-3. Build and upload the code using "task device-upload", your can refer [Shake Shake Project Step 5](https://microsoft.github.io/azure-iot-developer-kit/docs/projects/shake-shake/)
+3. Build and upload the code using "task device-upload", your can refer [Shake Shake Project Step 5](https://microsoft.github.io/azure-iot-developer-kit/docs/projects/shake-shake/#step-5-build-and-upload-arduino-sketch)
 
 
 ## Step 2: Setup E2E Diagnostic solution for Shake Shake Project
@@ -63,7 +63,7 @@
 1. Please refer to [Modify Existing IoT Hub](./Modify%20Existing%20IoT%20Hub.md)
 
 ### Modifying existing Azure Function
-1. Open your Azure portal, and go to Application Insights that created in step 2. Keep a record of Instrumentation Key shown in the picture below: 
+1. Open your Azure portal, and go to Application Insights that created in Step 2. Keep a record of **Instrumentation Key** shown in the picture below: 
 ![Application Insights Portal](images/applicationInsights.png)
 
 2. Open Azure Function -> Shake Shake Project Azure Function
@@ -147,22 +147,20 @@
    };
    ```
 
-
-
 4. Open Application settings of the Azure function, and add App settings:
 
    |         App Settings Key         |                 App Settings Vaule                  |
    |----------------------------------|-----------------------------------------------------|
-   | APPINSIGHTS_INSTRUMENTATIONKEY   |                Instrumentation Key                  |
+   | APPINSIGHTS_INSTRUMENTATIONKEY   |   Instrumentation Key from Application Insights     |
 
 
 ### Configure Web App
-1. Please refer the document [Configure Application Insights Keys in Web App](./Guide%20to%20Config%20Application%20Insights%20Keys%20in%20Web%20App.md)
+1. Please refer the document [Configure Application Insights Keys in Web App](./Guide%20to%20Config%20Application%20Insights%20Keys%20in%20Web%20APP.md)
 
 
 ## Step 3: Test the project
 1. After app initialization, click button A and mildly shake the board to retrieve a random tweet with your hashtag (e.g. #build2017). A tweet will display on your screen in a few seconds
 
-2. Go to the Web APP deployed by Step 2, check if the diagnostic messages shown on the portal:
+2. Wait for 5~10 minutes because of delay in AI, then go to the Web APP deployed by Step 2, click "Diagnostics Map" in Dashboard, check if the diagnostic messages shown on the portal:
 
 ![](./images/Diagnostic_Portal.png)
